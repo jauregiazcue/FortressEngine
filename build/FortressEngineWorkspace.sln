@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FortressEngine", "FortressEngine.vcxproj", "{53764A05-3F44-3E0B-28D8-AE3114451A70}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FortressEngineLib", "libmaker\FortressEngineLib.vcxproj", "{AA8AEDB9-16A1-EB4F-5F18-7771CB6DBCD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53764A05-3F44-3E0B-28D8-AE3114451A70}.Debug|x64.ActiveCfg = Debug|x64
+		{53764A05-3F44-3E0B-28D8-AE3114451A70}.Debug|x64.Build.0 = Debug|x64
+		{53764A05-3F44-3E0B-28D8-AE3114451A70}.Release|x64.ActiveCfg = Release|x64
+		{53764A05-3F44-3E0B-28D8-AE3114451A70}.Release|x64.Build.0 = Release|x64
+		{AA8AEDB9-16A1-EB4F-5F18-7771CB6DBCD7}.Debug|x64.ActiveCfg = Debug|x64
+		{AA8AEDB9-16A1-EB4F-5F18-7771CB6DBCD7}.Debug|x64.Build.0 = Debug|x64
+		{AA8AEDB9-16A1-EB4F-5F18-7771CB6DBCD7}.Release|x64.ActiveCfg = Release|x64
+		{AA8AEDB9-16A1-EB4F-5F18-7771CB6DBCD7}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

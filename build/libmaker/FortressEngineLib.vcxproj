@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AA8AEDB9-16A1-EB4F-5F18-7771CB6DBCD7}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>FortressEngineLib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\bin\lib\</OutDir>
+    <IntDir>obj\Debug\</IntDir>
+    <TargetName>FortressEngineLib</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\bin\lib\</OutDir>
+    <IntDir>obj\Release\</IntDir>
+    <TargetName>FortressEngineLib</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\deps\glad\include;..\..\deps\glfw-3.3.8.bin.WIN64\include;..\..\deps\imgui-master;..\..\deps\imgui-master\backends;..\..\deps\glm-master;..\..\deps\miniaudio;..\..\deps\tinyobj;..\..\deps\stbimage;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\deps\glfw-3.3.8.bin.WIN64\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\deps\glad\include;..\..\deps\glfw-3.3.8.bin.WIN64\include;..\..\deps\imgui-master;..\..\deps\imgui-master\backends;..\..\deps\glm-master;..\..\deps\miniaudio;..\..\deps\tinyobj;..\..\deps\stbimage;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\deps\glfw-3.3.8.bin.WIN64\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\deps\stbimage\stb_image.h" />
+    <ClInclude Include="..\..\include\fe_input.h" />
+    <ClInclude Include="..\..\include\fe_material.h" />
+    <ClInclude Include="..\..\include\fe_program.h" />
+    <ClInclude Include="..\..\include\fe_shader.h" />
+    <ClInclude Include="..\..\include\fe_transform.h" />
+    <ClInclude Include="..\..\include\fe_window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\deps\glad\src\gl.c" />
+    <ClCompile Include="..\..\deps\imgui-master\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\imgui.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\imgui_demo.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\imgui_draw.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\imgui_tables.cpp" />
+    <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\src\fe_input.cc" />
+    <ClCompile Include="..\..\src\fe_material.cc" />
+    <ClCompile Include="..\..\src\fe_program.cc" />
+    <ClCompile Include="..\..\src\fe_shader.cc" />
+    <ClCompile Include="..\..\src\fe_transform.cc" />
+    <ClCompile Include="..\..\src\fe_window.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\shaders\test.frag" />
+    <None Include="..\..\src\shaders\test.vert" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

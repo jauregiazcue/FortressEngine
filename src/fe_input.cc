@@ -1,0 +1,85 @@
+
+// Author : jauregiaz
+#include "fe_input.h"
+#include <GLFW/glfw3.h>
+
+std::unordered_map<uint16_t, key_state> FEInput::keymap_;
+
+void keyCallback( GLFWwindow* window, const int key, const int scancode, const int action, const int mods ) {
+  auto iterator = FEInput::keymap_.find( key );
+  if(iterator != FEInput::keymap_.end()) {
+    
+    if(action == GLFW_PRESS) {
+      iterator->second.down = true;
+    }
+    if(action == GLFW_RELEASE) {
+      iterator->second.down = false;
+    }
+    
+  }
+ 
+
+}
+
+void FEInput::init() {
+  key_state state;
+  state.down = false;
+  state.change = false;
+  state.previous_down = false;
+  keymap_[GLFW_KEY_W] = state;
+  keymap_[GLFW_KEY_A] = state;
+  keymap_[GLFW_KEY_S] = state;
+  keymap_[GLFW_KEY_D] = state;
+  keymap_[GLFW_KEY_Q] = state;
+
+  keymap_[GLFW_KEY_0] = state;
+  keymap_[GLFW_KEY_1] = state;
+
+  keymap_[GLFW_KEY_UP] = state;
+  keymap_[GLFW_KEY_DOWN] = state;
+  keymap_[GLFW_KEY_LEFT] = state;
+  keymap_[GLFW_KEY_RIGHT] = state;
+
+  keymap_[GLFW_KEY_ENTER] = state;
+
+}
+
+bool FEInput::keyUp( const Key k ) {
+  key_state* km = &keymap_[(int)k];
+  return !km->previous_down;
+}
+
+bool FEInput::keyDown( const Key k ) {
+  key_state* km = &keymap_[(int)k];
+  return km->previous_down;
+}
+
+bool FEInput::keyPress( const Key k ) {
+  key_state* km = &keymap_[(int)k];
+  return  km->previous_down && km->change;
+}
+
+bool FEInput::keyRelease( const Key k ) {
+  key_state* km = &keymap_[(int)k];
+  return !km->previous_down && km->change;
+}
+
+void FEInput::SetCallback( GLFWwindow* window ) {
+  glfwSetKeyCallback( window, keyCallback );
+}
+
+void FEInput::nextFrame() {
+  for (int i = 0; i < keymap_.size(); i++) {
+    key_state* key = &keymap_[(int)i];
+    key->change = key->down != key->previous_down;
+    key->previous_down = key->down;
+  }
+}
+
+
+
+
+
+
+
+

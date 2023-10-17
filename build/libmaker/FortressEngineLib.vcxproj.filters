@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="deps">
+      <UniqueIdentifier>{F1A1957C-DDD8-960D-86C5-7C1072DB120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps\glad">
+      <UniqueIdentifier>{9853FA65-04BE-AEDC-4DFC-5F82B9A58C31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps\glad\src">
+      <UniqueIdentifier>{AF1DC6BB-1BDE-41F2-E418-8B6F509886CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps\imgui-master">
+      <UniqueIdentifier>{9461A272-0078-A008-49EF-2B2AB5447190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps\imgui-master\backends">
+      <UniqueIdentifier>{3EE290CD-2AF2-3C9E-93AB-A1BC7FDA2B37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps\stbimage">
+      <UniqueIdentifier>{EC527F39-5813-FB6F-214E-44ED8DCD3F4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\shaders">
+      <UniqueIdentifier>{26450F9B-92FA-8790-1BEF-816787A37E94}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\deps\stbimage\stb_image.h">
+      <Filter>deps\stbimage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_input.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_material.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_program.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_shader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_transform.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_window.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\deps\glad\src\gl.c">
+      <Filter>deps\glad\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\backends\imgui_impl_glfw.cpp">
+      <Filter>deps\imgui-master\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\backends\imgui_impl_opengl3.cpp">
+      <Filter>deps\imgui-master\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\backends\imgui_impl_win32.cpp">
+      <Filter>deps\imgui-master\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\imgui.cpp">
+      <Filter>deps\imgui-master</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\imgui_demo.cpp">
+      <Filter>deps\imgui-master</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\imgui_draw.cpp">
+      <Filter>deps\imgui-master</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\imgui_tables.cpp">
+      <Filter>deps\imgui-master</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp">
+      <Filter>deps\imgui-master</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_input.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_material.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_program.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_shader.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_transform.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_window.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\shaders\test.frag">
+      <Filter>src\shaders</Filter>
+    </None>
+    <None Include="..\..\src\shaders\test.vert">
+      <Filter>src\shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
