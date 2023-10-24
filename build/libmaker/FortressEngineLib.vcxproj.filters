@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\deps\stbimage\stb_image.h">
       <Filter>deps\stbimage</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\fe_entity.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\fe_input.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -40,6 +43,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\fe_program.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\fe_render.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\fe_shader.h">
@@ -80,6 +86,9 @@
     <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp">
       <Filter>deps\imgui-master</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\fe_entity.cc">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\fe_input.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -87,6 +96,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\fe_program.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_render.cc">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\fe_shader.cc">

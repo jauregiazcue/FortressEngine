@@ -6,6 +6,8 @@
 #include "fe_transform.h"
 #include "fe_material.h"
 #include "fe_program.h"
+#include "fe_entity.h"
+#include "fe_render.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -32,34 +34,27 @@ int main(void) {
   std::shared_ptr<FEProgram> pro = std::make_shared<FEProgram>(std::vector<FEShader>{
     FEShader("../src/shaders/test.vert", ShaderType::Vertex),
     FEShader("../src/shaders/test.frag", ShaderType::Fragment) });
-
-  FEMaterialComponent mc{ pro,vertices,index };
-  FETransformComponent tc{ { 0.0f,0.0f,0.0f },
-                           { 0.0f,0.0f,0.0f }, 
-                           { 1.0f,1.0f,1.0f } };
-
-  glm::mat4 projection_ = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.1f, 100.0f);
+  FEEntity entity{ FETransformComponent{ { 0.0f,0.0f,0.0f },
+                                         { 0.0f,0.0f,0.0f },
+                                         { 1.0f,1.0f,1.0f } },
+                   FEMaterialComponent{ pro,vertices,index }};
 
 
-  FETransformComponent cameraTransform_;
-  cameraTransform_.setPosition({ 0.0f,0.0f,5.0f });
-  glm::mat4 view_ = glm::inverse(cameraTransform_.getTransform());
 
 
+  std::vector<FEEntity> entity_list;
+
+  entity_list.push_back(entity);
+
+  FERender renderer;
+  renderer.SetCameraPosition({ 0.0f,0.0f,5.0f });
 
   while (!fe_window.isDone()) {
     fe_window.clear();
 
-
-
-    mc.enable();
-
-    mc.setUpModel(tc.getTransform());
-
-    mc.setUpCamera(projection_
-                  , view_ 
-                  );
-    mc.bindAndRender();
+    renderer.DebugCameraMovement();
+    renderer.Render(entity_list);
+    //entity.Draw(projection_,view_);
 
 
 
