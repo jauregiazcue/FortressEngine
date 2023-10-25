@@ -102,6 +102,7 @@
     <ClInclude Include="..\..\include\fe_render.h" />
     <ClInclude Include="..\..\include\fe_shader.h" />
     <ClInclude Include="..\..\include\fe_transform.h" />
+    <ClInclude Include="..\..\include\fe_voxel.h" />
     <ClInclude Include="..\..\include\fe_window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +122,7 @@
     <ClCompile Include="..\..\src\fe_render.cc" />
     <ClCompile Include="..\..\src\fe_shader.cc" />
     <ClCompile Include="..\..\src\fe_transform.cc" />
+    <ClCompile Include="..\..\src\fe_voxel.cc" />
     <ClCompile Include="..\..\src\fe_window.cc" />
   </ItemGroup>
   <ItemGroup>
