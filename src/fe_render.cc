@@ -11,9 +11,12 @@ FERender::FERender() {
 	view_ = glm::inverse(cameraTransform_.getTransform());
 }
 
-void FERender::Render(std::vector<FEEntity>& entity_list) {
-	for (int i = 0; i < entity_list.size(); i++) {
-		entity_list[i].Draw(projection_, view_);
+void FERender::Render(std::vector<FEVoxel>& voxel_list) {
+	for (int voxel = 0; voxel < voxel_list.size(); voxel++) {
+		for (int face = 0; face < voxel_list[voxel].faces_.size(); face++) {
+			voxel_list[voxel].faces_[face].Draw(projection_, view_);
+		}
+		
 	}
 }
 

@@ -17,6 +17,8 @@ public:
 	FETransformComponent transform_;
 	FEMaterialComponent material_;
 
+	bool active_;
+
 };
 
 

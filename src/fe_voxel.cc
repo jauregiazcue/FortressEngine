@@ -39,24 +39,25 @@ FEVoxel::~FEVoxel() {
 std::vector<FEMaterialComponent::Vertex> FEVoxel::initFrontFace() {
 
   std::vector<FEMaterialComponent::Vertex> vertices;
+  float normal[3]{0.0f,0.0f,0.0f};
 
   vertices.push_back({ {-0.5f,-0.5f,0.5f},
-                       {1.0f,0.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,0.0f} }); // bottom left
 
   vertices.push_back({ {0.5f,-0.5f,0.5f},
-                       {0.0f,1.0f,1.0f},
+                      {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,0.0f} }); // bottom right
 
   vertices.push_back({ {-0.5f,0.5f,0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,1.0f} }); // top left
 
   vertices.push_back({ {0.5f,0.5f,0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 
@@ -65,24 +66,25 @@ std::vector<FEMaterialComponent::Vertex> FEVoxel::initFrontFace() {
 
 std::vector<FEMaterialComponent::Vertex> FEVoxel::initRightFace() {
   std::vector<FEMaterialComponent::Vertex> vertices;
+  float normal[3]{ 1.0f,0.0f,0.0f };
 
   vertices.push_back({ {0.5f,-0.5f,0.5f},
-                       {0.0f,0.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,0.0f} }); // bottom left
 
   vertices.push_back({ {0.5f,-0.5f,-0.5f},
-                       {0.0f,1.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,0.0f} }); // bottom right
 
   vertices.push_back({ {0.5f,0.5f,0.5f},
-                       {1.0f,0.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,1.0f} }); // top left
 
   vertices.push_back({ {0.5f,0.5f,-0.5f},
-                       {1.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 
@@ -91,24 +93,25 @@ std::vector<FEMaterialComponent::Vertex> FEVoxel::initRightFace() {
 
 std::vector<FEMaterialComponent::Vertex> FEVoxel::initBackFace() {
   std::vector<FEMaterialComponent::Vertex> vertices;
+  float normal[3]{ 0.0f,1.0f,0.0f };
 
   vertices.push_back({ {0.5f,-0.5f,-0.5f},
-                       {1.0f,0.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,0.0f} }); // bottom left
 
   vertices.push_back({ {-0.5f,-0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,0.0f} }); // bottom right
 
   vertices.push_back({ {0.5f,0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,1.0f} }); // top left
 
   vertices.push_back({ {-0.5f,0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 
@@ -117,24 +120,25 @@ std::vector<FEMaterialComponent::Vertex> FEVoxel::initBackFace() {
 
 std::vector<FEMaterialComponent::Vertex> FEVoxel::initLeftFace() {
   std::vector<FEMaterialComponent::Vertex> vertices;
+  float normal[3]{ 0.0f,0.0f,1.0f };
 
   vertices.push_back({ {-0.5f,-0.5f,-0.5f},
-                       {0.0f,0.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,0.0f} }); // bottom left
 
   vertices.push_back({ {-0.5f,-0.5f,0.5f},
-                       {0.0f,1.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,0.0f} }); // bottom right
 
   vertices.push_back({ {-0.5f,0.5f,-0.5f},
-                       {1.0f,0.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,1.0f} }); // top left
 
   vertices.push_back({ {-0.5f,0.5f,0.5f},
-                       {1.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 
@@ -143,24 +147,25 @@ std::vector<FEMaterialComponent::Vertex> FEVoxel::initLeftFace() {
 
 std::vector <FEMaterialComponent::Vertex> FEVoxel::initTopFace() {
   std::vector<FEMaterialComponent::Vertex> vertices;
+  float normal[3]{ 0.5f,0.5f,0.5f };
 
   vertices.push_back({ {-0.5f,0.5f,0.5f},
-                       {1.0f,0.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,0.0f} }); // bottom left
 
   vertices.push_back({ {0.5f,0.5f,0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,0.0f} }); // bottom right
 
   vertices.push_back({ {-0.5f,0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,1.0f} }); // top left
 
   vertices.push_back({ {0.5f,0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 
@@ -169,24 +174,25 @@ std::vector <FEMaterialComponent::Vertex> FEVoxel::initTopFace() {
 
 std::vector<FEMaterialComponent::Vertex> FEVoxel::initBottomFace() {
   std::vector<FEMaterialComponent::Vertex> vertices;
+  float normal[3]{ 1.0f,1.0f,0.0f };
 
   vertices.push_back({ {0.5f,-0.5f,0.5f},
-                       {1.0f,0.0f,0.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,0.0f} }); // bottom left
 
   vertices.push_back({ {-0.5f,-0.5f,0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,0.0f} }); // bottom right
 
   vertices.push_back({ {0.5f,-0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {0.0f,1.0f} }); // top left
 
   vertices.push_back({ {-0.5f,-0.5f,-0.5f},
-                       {0.0f,1.0f,1.0f},
+                       {normal[0],normal[1],normal[2]},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 

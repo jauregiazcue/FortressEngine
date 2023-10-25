@@ -34,6 +34,14 @@ void FEInput::init() {
 
   keymap_[GLFW_KEY_0] = state;
   keymap_[GLFW_KEY_1] = state;
+  keymap_[GLFW_KEY_2] = state;
+  keymap_[GLFW_KEY_3] = state;
+  keymap_[GLFW_KEY_4] = state;
+  keymap_[GLFW_KEY_5] = state;
+  keymap_[GLFW_KEY_6] = state;
+  keymap_[GLFW_KEY_7] = state;
+  keymap_[GLFW_KEY_8] = state;
+  keymap_[GLFW_KEY_9] = state;
 
   keymap_[GLFW_KEY_UP] = state;
   keymap_[GLFW_KEY_DOWN] = state;
