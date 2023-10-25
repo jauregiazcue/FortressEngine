@@ -19,6 +19,18 @@ father_transform_(transform) {
 
   vertices = initLeftFace();
   faces_.push_back({ father_transform_ , FEMaterialComponent{ pro,vertices,index } });
+
+  vertices = initBackFace();
+  faces_.push_back({ father_transform_ , FEMaterialComponent{ pro,vertices,index } });
+
+  vertices = initRightFace();
+  faces_.push_back({ father_transform_ , FEMaterialComponent{ pro,vertices,index } });
+
+  vertices = initTopFace();
+  faces_.push_back({ father_transform_ , FEMaterialComponent{ pro,vertices,index } });
+
+  vertices = initBottomFace();
+  faces_.push_back({ father_transform_ , FEMaterialComponent{ pro,vertices,index } });
 }
 
 FEVoxel::~FEVoxel() {
@@ -54,6 +66,52 @@ std::vector<FEMaterialComponent::Vertex> FEVoxel::initFrontFace() {
 std::vector<FEMaterialComponent::Vertex> FEVoxel::initRightFace() {
   std::vector<FEMaterialComponent::Vertex> vertices;
 
+  vertices.push_back({ {0.5f,-0.5f,0.5f},
+                       {0.0f,0.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,0.0f} }); // bottom left
+
+  vertices.push_back({ {0.5f,-0.5f,-0.5f},
+                       {0.0f,1.0f,0.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,0.0f} }); // bottom right
+
+  vertices.push_back({ {0.5f,0.5f,0.5f},
+                       {1.0f,0.0f,0.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,1.0f} }); // top left
+
+  vertices.push_back({ {0.5f,0.5f,-0.5f},
+                       {1.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,1.0f} }); // top right
+
+  return vertices;
+}
+
+std::vector<FEMaterialComponent::Vertex> FEVoxel::initBackFace() {
+  std::vector<FEMaterialComponent::Vertex> vertices;
+
+  vertices.push_back({ {0.5f,-0.5f,-0.5f},
+                       {1.0f,0.0f,0.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,0.0f} }); // bottom left
+
+  vertices.push_back({ {-0.5f,-0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,0.0f} }); // bottom right
+
+  vertices.push_back({ {0.5f,0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,1.0f} }); // top left
+
+  vertices.push_back({ {-0.5f,0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,1.0f} }); // top right
+
   return vertices;
 }
 
@@ -77,6 +135,58 @@ std::vector<FEMaterialComponent::Vertex> FEVoxel::initLeftFace() {
 
   vertices.push_back({ {-0.5f,0.5f,0.5f},
                        {1.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,1.0f} }); // top right
+
+  return vertices;
+}
+
+std::vector <FEMaterialComponent::Vertex> FEVoxel::initTopFace() {
+  std::vector<FEMaterialComponent::Vertex> vertices;
+
+  vertices.push_back({ {-0.5f,0.5f,0.5f},
+                       {1.0f,0.0f,0.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,0.0f} }); // bottom left
+
+  vertices.push_back({ {0.5f,0.5f,0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,0.0f} }); // bottom right
+
+  vertices.push_back({ {-0.5f,0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,1.0f} }); // top left
+
+  vertices.push_back({ {0.5f,0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,1.0f} }); // top right
+
+  return vertices;
+}
+
+std::vector<FEMaterialComponent::Vertex> FEVoxel::initBottomFace() {
+  std::vector<FEMaterialComponent::Vertex> vertices;
+
+  vertices.push_back({ {0.5f,-0.5f,0.5f},
+                       {1.0f,0.0f,0.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,0.0f} }); // bottom left
+
+  vertices.push_back({ {-0.5f,-0.5f,0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {1.0f,0.0f} }); // bottom right
+
+  vertices.push_back({ {0.5f,-0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
+                       {0.0f,0.0f,0.0f,0.0f},
+                       {0.0f,1.0f} }); // top left
+
+  vertices.push_back({ {-0.5f,-0.5f,-0.5f},
+                       {0.0f,1.0f,1.0f},
                        {0.0f,0.0f,0.0f,0.0f},
                        {1.0f,1.0f} }); // top right
 

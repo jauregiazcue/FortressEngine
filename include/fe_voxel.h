@@ -15,10 +15,10 @@ public:
 
 	std::vector<FEMaterialComponent::Vertex> initFrontFace();
 	std::vector<FEMaterialComponent::Vertex> initRightFace();
-	void initBackFace();
-	std::vector <FEMaterialComponent::Vertex> initLeftFace();
-	void initTopFace();
-	void initBottomFace();
+	std::vector<FEMaterialComponent::Vertex> initBackFace();
+	std::vector<FEMaterialComponent::Vertex> initLeftFace();
+	std::vector<FEMaterialComponent::Vertex> initTopFace();
+	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
 	FETransformComponent father_transform_;
 
