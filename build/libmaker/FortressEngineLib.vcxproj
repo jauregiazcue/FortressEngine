@@ -95,6 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deps\stbimage\stb_image.h" />
+    <ClInclude Include="..\..\include\fe_debugInterface.h" />
     <ClInclude Include="..\..\include\fe_entity.h" />
     <ClInclude Include="..\..\include\fe_input.h" />
     <ClInclude Include="..\..\include\fe_material.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="..\..\deps\imgui-master\imgui_draw.cpp" />
     <ClCompile Include="..\..\deps\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\src\fe_debugInterface.cc" />
     <ClCompile Include="..\..\src\fe_entity.cc" />
     <ClCompile Include="..\..\src\fe_input.cc" />
     <ClCompile Include="..\..\src\fe_material.cc" />
