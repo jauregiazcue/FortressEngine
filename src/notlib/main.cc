@@ -19,7 +19,7 @@
 int main(void) {
 
   FEWindow fe_window{ {1.0f,1.0f,1.0f,1.0f} };
-  if (fe_window.init(1280, 700) != 0) {
+  if (fe_window.init() != 0) {
     return -1;
   }
 

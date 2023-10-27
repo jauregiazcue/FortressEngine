@@ -11,6 +11,7 @@
 #include <imgui_impl_opengl3.h>
 #include "fe_input.h"
 
+#include "fe_constants.h"
 
 
 void GLFWindowDestroy::operator()(GLFWwindow* ptr) { glfwDestroyWindow(ptr); }
@@ -23,13 +24,13 @@ FEWindow::~FEWindow() {
   glfwTerminate();
 }
 
-int FEWindow::init( const int width, const int height ) {
+int FEWindow::init() {
   
   if(!glfwInit()) {
     return -1;
   }
   // Create a windowed mode window and its OpenGL context 
-  window_.reset(glfwCreateWindow(width, height, "Palace Engine", NULL, NULL));
+  window_.reset(glfwCreateWindow(kWindowWidth, kWindowHeight, "Palace Engine", NULL, NULL));
   if(!window_.get()) {
     glfwTerminate();
     return -1;

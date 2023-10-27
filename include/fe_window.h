@@ -19,7 +19,7 @@ public:
 
 	~FEWindow();
 
-	int init( const int width, const int height );
+	int init();
 
 	bool isDone();
 

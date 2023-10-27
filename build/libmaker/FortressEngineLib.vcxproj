@@ -95,6 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deps\stbimage\stb_image.h" />
+    <ClInclude Include="..\..\include\fe_constants.h" />
     <ClInclude Include="..\..\include\fe_debugInterface.h" />
     <ClInclude Include="..\..\include\fe_entity.h" />
     <ClInclude Include="..\..\include\fe_input.h" />

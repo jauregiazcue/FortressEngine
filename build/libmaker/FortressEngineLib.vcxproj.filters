@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\deps\stbimage\stb_image.h">
       <Filter>deps\stbimage</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\fe_constants.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\fe_debugInterface.h">
       <Filter>include</Filter>
     </ClInclude>

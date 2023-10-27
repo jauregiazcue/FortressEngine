@@ -2,9 +2,11 @@
 #include <fe_input.h>
 #include <glm/ext/matrix_clip_space.hpp>
 
+#include "fe_constants.h"
 
 FERender::FERender() {
-	projection_ = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.1f, 100.0f);
+	projection_ = glm::perspective(glm::radians(45.0f), 
+																 (float)kWindowWidth / (float)kWindowHeight, 0.1f, 100.0f);
 
 
 	cameraTransform_.setRotation({ 0.0f,0.0f,0.0f });
