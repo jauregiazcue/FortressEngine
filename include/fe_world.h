@@ -1,8 +1,6 @@
 #include <vector>
 #include <fe_material.h>
 #include <fe_transform.h>
-#include <fe_entity.h>
-#include <fe_voxel.h>
 
 #include <fe_program.h>
 

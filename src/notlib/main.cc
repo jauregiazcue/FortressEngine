@@ -6,10 +6,8 @@
 #include "fe_transform.h"
 #include "fe_material.h"
 #include "fe_program.h"
-#include "fe_entity.h"
 #include "fe_render.h"
 
-#include "fe_voxel.h"
 #include "fe_input.h"
 #include "fe_debugInterface.h"
 
