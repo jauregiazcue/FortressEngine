@@ -14,7 +14,10 @@
 #include "fe_debugInterface.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <fe_world.h>
 
+
+#include <chrono>
 
 int main(void) {
 
@@ -24,18 +27,16 @@ int main(void) {
   }
 
   
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+  
+  FEWorld chunk{ 50 };
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-  std::vector<FEVoxel> voxel_list;
-  for (int y = 0; y < 5; y++) {
-    for (int z = 0; z < 5; z++) {
-      for (int x = 0; x < 5; x++) {
-        voxel_list.push_back(FEVoxel{ FETransformComponent{ 
-                              { (float)x * 1.5f,-(float)y * 1.5f,-(float)z * 1.5f },
-                                                            { 0.0f,0.0f,0.0f },
-                                                            { 1.0f,1.0f,1.0f } } });
-      }
-    }
-  }
+
+
+  printf("Time Between : %d ms", 
+    std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
+
   
 
   FERender renderer;
@@ -48,13 +49,19 @@ int main(void) {
 
   FEDebugInterface debugInterface;
 
+  GLfloat deltaTime = 0.0f;
+  GLfloat lastFrame = 0.0f;
+
   while (!fe_window.isDone()) {
     fe_window.clear();
+    GLfloat currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
 
 
     renderer.DebugCameraMovement();
-    renderer.Render(voxel_list);
-    debugInterface.Draw(voxel_list);
+    renderer.Render(chunk);
+    debugInterface.Draw(chunk,deltaTime);
 
     fe_window.swap();
   }

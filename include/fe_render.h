@@ -2,13 +2,14 @@
 #define __FERENDER_H__ 1
 
 #include <fe_transform.h>
-#include "fe_voxel.h"
+
+#include <fe_world.h>
 
 class FERender {
 public:
 	FERender();
 
-	void Render(std::vector<FEVoxel>& voxel_list);
+	void Render(FEWorld& world);
 
 	void SetCameraPosition(glm::vec3 position);
 

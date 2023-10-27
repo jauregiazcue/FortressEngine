@@ -10,13 +10,14 @@ FEDebugInterface::FEDebugInterface() {
   active_voxel_ = 0;
   active_face_ = 0;
   wireframe_ = false;
+  fps = 0;
 }
 
 FEDebugInterface::~FEDebugInterface() {
 
 }
 
-void FEDebugInterface::Draw(std::vector<FEVoxel>& voxel_list) {
+void FEDebugInterface::Draw(FEWorld& world, GLfloat deltaTime) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
 
@@ -27,13 +28,25 @@ void FEDebugInterface::Draw(std::vector<FEVoxel>& voxel_list) {
 
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
 
-  ImGui::SliderInt("Voxel", &active_voxel_, 0, voxel_list.size());
+  fps = 1.0f / deltaTime;
+
+  ImGui::Text("FPS : %03.00f",fps);
+
+  if (ImGui::InputInt("Voxel", &active_voxel_)) {
+    if (active_voxel_ < 0) {
+      active_voxel_ = 0;
+    }
+
+    if (active_voxel_ >= world.transform_list_.size()) {
+      active_voxel_ = world.transform_list_.size() - 1;
+    }
+  }
   ImGui::SliderInt("Face", &active_face_, 0, 5);
 
   if (ImGui::Button("Change Face State")) {
-    voxel_list[active_voxel_].faces_[active_face_].active_ == false ? 
-      voxel_list[active_voxel_].faces_[active_face_].active_ = true :
-      voxel_list[active_voxel_].faces_[active_face_].active_ = false;
+      world.voxel_list_[active_voxel_].faces_[active_face_].active_ == false ?
+        world.voxel_list_[active_voxel_].faces_[active_face_].active_ = true :
+        world.voxel_list_[active_voxel_].faces_[active_face_].active_ = false;
   }
 
   if (ImGui::Button("Wireframe")) {

@@ -6,7 +6,7 @@
 #include <memory>
 #include <glm/vec4.hpp>
 #include <vector>
-#include <fe_voxel.h>
+#include <fe_world.h>
 
 class FEDebugInterface {
 public:
@@ -16,13 +16,14 @@ public:
 
 	~FEDebugInterface();
 
-	void Draw(std::vector<FEVoxel>& voxel_list);
+	void Draw(FEWorld& world, GLfloat deltaTime);
 
 	int active_voxel_;
 	int active_face_;
 
 	bool wireframe_;
 
+	float fps;
 };
 
 

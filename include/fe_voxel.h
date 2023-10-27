@@ -10,17 +10,11 @@
 class FEVoxel {
 public:
 	
-	FEVoxel(FETransformComponent transform);
+	FEVoxel(FETransformComponent& transform, std::vector<FEEntity> faces);
 	~FEVoxel();
 
-	std::vector<FEMaterialComponent::Vertex> initFrontFace();
-	std::vector<FEMaterialComponent::Vertex> initRightFace();
-	std::vector<FEMaterialComponent::Vertex> initBackFace();
-	std::vector<FEMaterialComponent::Vertex> initLeftFace();
-	std::vector<FEMaterialComponent::Vertex> initTopFace();
-	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
-	FETransformComponent father_transform_;
+	FETransformComponent& father_transform_;
 
 	std::vector<FEEntity> faces_;
 

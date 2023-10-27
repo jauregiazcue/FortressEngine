@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\deps\stbimage\stb_image.h">
       <Filter>deps\stbimage</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\fe_chunk.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\fe_constants.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -66,6 +69,9 @@
     <ClInclude Include="..\..\include\fe_window.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\fe_world.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\deps\glad\src\gl.c">
@@ -95,6 +101,9 @@
     <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp">
       <Filter>deps\imgui-master</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\fe_chunk.cc">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\fe_debugInterface.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -123,6 +132,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\fe_window.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\fe_world.cc">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

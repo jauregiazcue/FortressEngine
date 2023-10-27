@@ -1,6 +1,6 @@
 #include "..\include\fe_entity.h"
 
-FEEntity::FEEntity(FETransformComponent transform, FEMaterialComponent material) :
+FEEntity::FEEntity(FETransformComponent& transform, FEMaterialComponent& material) :
 transform_(transform), material_(material) {
   active_ = true;
 }

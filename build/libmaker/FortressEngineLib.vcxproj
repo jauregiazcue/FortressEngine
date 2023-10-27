@@ -95,6 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\deps\stbimage\stb_image.h" />
+    <ClInclude Include="..\..\include\fe_chunk.h" />
     <ClInclude Include="..\..\include\fe_constants.h" />
     <ClInclude Include="..\..\include\fe_debugInterface.h" />
     <ClInclude Include="..\..\include\fe_entity.h" />
@@ -106,6 +107,7 @@
     <ClInclude Include="..\..\include\fe_transform.h" />
     <ClInclude Include="..\..\include\fe_voxel.h" />
     <ClInclude Include="..\..\include\fe_window.h" />
+    <ClInclude Include="..\..\include\fe_world.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\deps\glad\src\gl.c" />
@@ -117,6 +119,7 @@
     <ClCompile Include="..\..\deps\imgui-master\imgui_draw.cpp" />
     <ClCompile Include="..\..\deps\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\src\fe_chunk.cc" />
     <ClCompile Include="..\..\src\fe_debugInterface.cc" />
     <ClCompile Include="..\..\src\fe_entity.cc" />
     <ClCompile Include="..\..\src\fe_input.cc" />
@@ -127,6 +130,7 @@
     <ClCompile Include="..\..\src\fe_transform.cc" />
     <ClCompile Include="..\..\src\fe_voxel.cc" />
     <ClCompile Include="..\..\src\fe_window.cc" />
+    <ClCompile Include="..\..\src\fe_world.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\shaders\test.frag" />

@@ -9,13 +9,13 @@
 class FEEntity {
 public:
 	
-	FEEntity(FETransformComponent transform, FEMaterialComponent material);
+	FEEntity(FETransformComponent& transform, FEMaterialComponent& material);
 	~FEEntity();
 
 	void Draw(glm::mat4 projection, glm::mat4 view);
 
-	FETransformComponent transform_;
-	FEMaterialComponent material_;
+	FETransformComponent& transform_;
+	FEMaterialComponent& material_;
 
 	bool active_;
 
