@@ -16,14 +16,21 @@ public:
 
 	~FEDebugInterface();
 
-	void Draw(FEWorld& world, GLfloat deltaTime);
+	void Draw(GLfloat deltaTime);
 
 	int active_voxel_;
 	int active_face_;
 
 	bool wireframe_;
 
-	float fps;
+	float fps_;
+
+	bool world_made_;
+	bool world_culling_;
+
+	int world_voxel_per_row_;
+
+	FEWorld world_;
 };
 
 

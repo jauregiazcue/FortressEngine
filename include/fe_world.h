@@ -12,9 +12,11 @@ class FEWorld {
 public:
 	
 
-	FEWorld(int voxelPerRow);
+	FEWorld();
 
 	~FEWorld();
+
+	void init(int voxelPerRow,bool culling);
 
 	void createChunks();
 
@@ -58,7 +60,7 @@ public:
 
 	std::vector<Voxel> voxel_list_;
 
-	int voxelPerRow_;
+	int voxel_per_row_;
 	const int how_many_faces_ = 6;
 	int active_triangles_;
 	long long ms_for_chunk_creation_;

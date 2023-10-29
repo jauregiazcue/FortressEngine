@@ -1,8 +1,8 @@
 #include "fe_world.h"
 
 
-FEWorld::FEWorld(int voxelPerRow) {
-  voxelPerRow_ = voxelPerRow;
+FEWorld::FEWorld() {
+  
 
    std::vector<FEMaterialComponent::Vertex> vertices = initFrontFace();
 
@@ -32,16 +32,7 @@ FEWorld::FEWorld(int voxelPerRow) {
 
   active_triangles_ = 0;
 
-  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  createChunks();
-  
-  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-  Culling();
-
-  ms_for_chunk_creation_ =
- std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
   
 }
@@ -50,11 +41,29 @@ FEWorld::~FEWorld() {
 
 }
 
+void FEWorld::init(int voxelPerRow, bool culling) {
+  voxel_per_row_ = voxelPerRow;
+
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+  createChunks();
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  ms_for_chunk_creation_ =
+    std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+
+  if (culling) {
+    Culling();
+  }
+
+}
+
 void FEWorld::createChunks() {
   
-  for (int y = 0; y < voxelPerRow_; y++) {
-    for (int z = 0; z < voxelPerRow_; z++) {
-      for (int x = 0; x < voxelPerRow_; x++) {
+  for (int y = 0; y < voxel_per_row_; y++) {
+    for (int z = 0; z < voxel_per_row_; z++) {
+      for (int x = 0; x < voxel_per_row_; x++) {
         transform_list_.push_back(FETransformComponent{
                               { (float)x * 1.5f,(float)y * -1.5f,(float)z * -1.5f },
                               { 0.0f,0.0f,0.0f },
@@ -68,9 +77,9 @@ void FEWorld::createChunks() {
   int voxel_id_ = 0;
 
 
-  for (int y = 0; y < voxelPerRow_; y++) {
-    for (int z = 0; z < voxelPerRow_; z++) {
-      for (int x = 0; x < voxelPerRow_; x++) {
+  for (int y = 0; y < voxel_per_row_; y++) {
+    for (int z = 0; z < voxel_per_row_; z++) {
+      for (int x = 0; x < voxel_per_row_; x++) {
 
         voxel_list_.push_back({ voxel_id_,FEWorld::VoxelType::block,
           {{ 0,true },
@@ -123,26 +132,26 @@ void FEWorld::Culling() {
 void FEWorld::CheckFaces(int voxel_to_check) {
 
   //LEFT FACE CHECKING
-  if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxelPerRow_ ) != 0) {
+  if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[1].active_ = false;
     active_triangles_ -= 2;
   }
 
   //RIGHTA FACE CHECKING
   if (voxel_to_check + 1 < voxel_list_.size() 
-    && ((voxel_to_check + 1) % voxelPerRow_ ) != 0) {
+    && ((voxel_to_check + 1) % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[3].active_ = false;
     active_triangles_ -= 2;
   }
 
-  int voxel_to_check_2 = voxel_to_check % (voxelPerRow_ * voxelPerRow_);
+  int voxel_to_check_2 = voxel_to_check % (voxel_per_row_ * voxel_per_row_);
   //FRONT FACE CHECKING
-  if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxelPerRow_) {
+  if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxel_per_row_) {
     voxel_list_[voxel_to_check].faces_[0].active_ = false;
     active_triangles_ -= 2;
   }
 
-  int last_row = ((voxelPerRow_ * voxelPerRow_) - voxelPerRow_);
+  int last_row = ((voxel_per_row_ * voxel_per_row_) - voxel_per_row_);
   //BACK FACE CHECKING
   if (voxel_to_check_2 < voxel_list_.size() 
     && voxel_to_check_2 < last_row) {
@@ -150,12 +159,12 @@ void FEWorld::CheckFaces(int voxel_to_check) {
     active_triangles_ -= 2;
   }
 
-  if (voxel_to_check >= (voxelPerRow_ * voxelPerRow_)) {
+  if (voxel_to_check >= (voxel_per_row_ * voxel_per_row_)) {
     voxel_list_[voxel_to_check].faces_[4].active_ = false;
     active_triangles_ -= 2;
   }
 
-  if (voxel_to_check < ((voxelPerRow_ * voxelPerRow_ * voxelPerRow_) - (voxelPerRow_ * voxelPerRow_))) {
+  if (voxel_to_check < ((voxel_per_row_ * voxel_per_row_ * voxel_per_row_) - (voxel_per_row_ * voxel_per_row_))) {
     voxel_list_[voxel_to_check].faces_[5].active_ = false;
     active_triangles_ -= 2;
   }

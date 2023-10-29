@@ -23,13 +23,8 @@ int main(void) {
     return -1;
   }
 
-  FEWorld chunk{ 20 };
-
   FERender renderer;
   renderer.SetCameraPosition({ 0.0f,0.0f,5.0f });
-
-  
-  
 
   bool wireframe = false;
 
@@ -46,8 +41,8 @@ int main(void) {
 
 
     renderer.DebugCameraMovement();
-    renderer.Render(chunk);
-    debugInterface.Draw(chunk,deltaTime);
+    renderer.Render(debugInterface.world_);
+    debugInterface.Draw(deltaTime);
 
     fe_window.swap();
   }
