@@ -62,6 +62,7 @@ public:
 
 	int voxelPerRow_;
 	const int how_many_faces_ = 6;
+	int active_triangles_;
 };
 
 

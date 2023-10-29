@@ -29,6 +29,8 @@ FEWorld::FEWorld(int voxelPerRow) {
   vertices = initBottomFace();
   material_list_.push_back({ FEMaterialComponent{ pro,vertices,index } });
 
+  active_triangles_ = 0;
+
   createChunks();
   Culling();
 }
@@ -67,7 +69,8 @@ void FEWorld::createChunks() {
            { 4,true },
            { 5,true }} });
         
-
+        //One voxel = 6 faces = 12 triangles
+        active_triangles_ += 12;
         voxel_id_ += 1;
       }
     }
@@ -111,18 +114,21 @@ void FEWorld::CheckFaces(int voxel_to_check) {
   //LEFT FACE CHECKING
   if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxelPerRow_ ) != 0) {
     voxel_list_[voxel_to_check].faces_[1].active_ = false;
+    active_triangles_ -= 2;
   }
 
   //RIGHTA FACE CHECKING
   if (voxel_to_check + 1 < voxel_list_.size() 
     && ((voxel_to_check + 1) % voxelPerRow_ ) != 0) {
     voxel_list_[voxel_to_check].faces_[3].active_ = false;
+    active_triangles_ -= 2;
   }
 
   int voxel_to_check_2 = voxel_to_check % (voxelPerRow_ * voxelPerRow_);
   //FRONT FACE CHECKING
   if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxelPerRow_) {
     voxel_list_[voxel_to_check].faces_[0].active_ = false;
+    active_triangles_ -= 2;
   }
 
   int last_row = ((voxelPerRow_ * voxelPerRow_) - voxelPerRow_);
@@ -130,14 +136,17 @@ void FEWorld::CheckFaces(int voxel_to_check) {
   if (voxel_to_check_2 < voxel_list_.size() 
     && voxel_to_check_2 < last_row) {
     voxel_list_[voxel_to_check].faces_[2].active_ = false;
+    active_triangles_ -= 2;
   }
 
   if (voxel_to_check >= (voxelPerRow_ * voxelPerRow_)) {
     voxel_list_[voxel_to_check].faces_[4].active_ = false;
+    active_triangles_ -= 2;
   }
 
   if (voxel_to_check < ((voxelPerRow_ * voxelPerRow_ * voxelPerRow_) - (voxelPerRow_ * voxelPerRow_))) {
     voxel_list_[voxel_to_check].faces_[5].active_ = false;
+    active_triangles_ -= 2;
   }
 }
 

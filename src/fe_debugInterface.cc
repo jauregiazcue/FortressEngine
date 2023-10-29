@@ -31,6 +31,8 @@ void FEDebugInterface::Draw(FEWorld& world, GLfloat deltaTime) {
   fps = 1.0f / deltaTime;
 
   ImGui::Text("FPS : %03.00f",fps);
+  ImGui::Text("Active Triangles : %d", world.active_triangles_);
+  ImGui::Text("Active Faces : %d", world.active_triangles_ / 2);
 
   if (ImGui::InputInt("Voxel", &active_voxel_)) {
     if (active_voxel_ < 0) {

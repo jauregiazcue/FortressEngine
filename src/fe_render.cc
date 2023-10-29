@@ -6,7 +6,7 @@
 
 FERender::FERender() {
 	projection_ = glm::perspective(glm::radians(45.0f), 
-																 (float)kWindowWidth / (float)kWindowHeight, 0.1f, 100.0f);
+																 (float)kWindowWidth / (float)kWindowHeight, 0.1f, 200.0f);
 
 
 	cameraTransform_.setRotation({ 0.0f,0.0f,0.0f });
