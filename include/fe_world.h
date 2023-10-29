@@ -1,14 +1,12 @@
+#ifndef __FEWORLD_H__
+#define __FEWORLD_H__ 1
+
+#include <chrono>
 #include <vector>
 #include <fe_material.h>
 #include <fe_transform.h>
 
 #include <fe_program.h>
-
-
-#ifndef __FEWORLD_H__
-#define __FEWORLD_H__ 1
-
-
 
 class FEWorld {
 public:
@@ -63,6 +61,7 @@ public:
 	int voxelPerRow_;
 	const int how_many_faces_ = 6;
 	int active_triangles_;
+	long long ms_for_chunk_creation_;
 };
 
 

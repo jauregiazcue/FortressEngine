@@ -33,6 +33,8 @@ void FEDebugInterface::Draw(FEWorld& world, GLfloat deltaTime) {
   ImGui::Text("FPS : %03.00f",fps);
   ImGui::Text("Active Triangles : %d", world.active_triangles_);
   ImGui::Text("Active Faces : %d", world.active_triangles_ / 2);
+  ImGui::Text("World Generation : %d ms", 
+               world.ms_for_chunk_creation_);
 
   if (ImGui::InputInt("Voxel", &active_voxel_)) {
     if (active_voxel_ < 0) {

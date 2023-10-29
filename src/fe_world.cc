@@ -1,5 +1,6 @@
 #include "fe_world.h"
 
+
 FEWorld::FEWorld(int voxelPerRow) {
   voxelPerRow_ = voxelPerRow;
 
@@ -31,8 +32,18 @@ FEWorld::FEWorld(int voxelPerRow) {
 
   active_triangles_ = 0;
 
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
   createChunks();
+  
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
   Culling();
+
+  ms_for_chunk_creation_ =
+ std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+
+  
 }
 
 FEWorld::~FEWorld() {

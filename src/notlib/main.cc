@@ -15,7 +15,6 @@
 #include <fe_world.h>
 
 
-#include <chrono>
 
 int main(void) {
 
@@ -24,18 +23,7 @@ int main(void) {
     return -1;
   }
 
-  
-  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-  
-  FEWorld chunk{ 50 };
-  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-
-
-  printf("Time Between : %d ms", 
-    std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
-
-  
+  FEWorld chunk{ 20 };
 
   FERender renderer;
   renderer.SetCameraPosition({ 0.0f,0.0f,5.0f });
