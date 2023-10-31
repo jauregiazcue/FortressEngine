@@ -62,8 +62,6 @@ FEMaterialComponent::FEMaterialComponent(std::shared_ptr<FEProgram> program,
   glEnableVertexAttribArray(3);
 
   glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float) * 10));
-
-
 }
 
 
@@ -75,6 +73,10 @@ FEMaterialComponent::~FEMaterialComponent() {
 void FEMaterialComponent::enable() {
   glUseProgram(program_->getId());
   assert(glGetError() == GL_NO_ERROR);
+}
+
+void FEMaterialComponent::enableWithOtherProgram(int program_id) {
+  glUseProgram(program_id);
 }
 
 void FEMaterialComponent::bindAndRender() {
@@ -106,6 +108,45 @@ void FEMaterialComponent::setUpCamera(const glm::mat4x4& projection, const glm::
 
   glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(aux));
   assert(glGetError() == GL_NO_ERROR);
+}
+
+void FEMaterialComponent::setUpModelWithOtherProgram(const glm::mat4x4& transform, int program_id){
+  GLint id = 0;
+  id = glGetUniformLocation(program_id, "model_matrix");
+  assert(glGetError() == GL_NO_ERROR);
+
+  glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(transform));
+  assert(glGetError() == GL_NO_ERROR);
+}
+
+void FEMaterialComponent::setUpCameraWithOtherProgram(const glm::mat4x4& projection, const glm::mat4x4& view, int program_id) {
+  GLint id = 0;
+
+  id = glGetUniformLocation(program_id, "projection_matrix");
+  assert(glGetError() == GL_NO_ERROR);
+  glm::mat4x4 aux = projection * view;
+
+  glUniformMatrix4fv(id, 1, GL_FALSE, glm::value_ptr(aux));
+  assert(glGetError() == GL_NO_ERROR);
+}
+
+GLint FEMaterialComponent::getUniformLocation(std::string name) {
+  GLint id = -1;
+  id = glGetUniformLocation(program_->getId(), name.c_str());
+
+
+  return id;
+}
+
+
+void FEMaterialComponent::setUpReferenceUniform(std::string name, const glm::vec3 value) {
+  glUniform3f(getUniformLocation(name), value.x, value.y, value.z);
+}
+
+void FEMaterialComponent::setUpReferenceUniformWithOtherProgram(std::string name, const glm::vec3 value, int program_id) {
+  GLint id = -1;
+  id = glGetUniformLocation(program_id, name.c_str());
+  glUniform3f(id, value.x, value.y, value.z);
 }
 
 

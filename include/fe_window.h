@@ -30,13 +30,15 @@ public:
 	void changeBackgroundColor(glm::vec4 background_color);
 
 	
+
+
 	private :
 	friend void resizeWindow(GLFWwindow* window, int width, int height);
 	//the window of the engine
 	std::unique_ptr<GLFWwindow,GLFWindowDestroy> window_;
 	glm::vec4 background_color_;
 	
-
+	friend class FEWorld;
 };
 
 

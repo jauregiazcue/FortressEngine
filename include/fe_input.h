@@ -5,6 +5,7 @@
 
 #include <GLFW/glfw3.h>
 #include <unordered_map>
+#include <glm/ext/vector_float2.hpp>
 
 struct GLFWwindow;
 
@@ -25,6 +26,10 @@ enum class Key {
 	KEY_7 = GLFW_KEY_7,
 	KEY_8 = GLFW_KEY_8,
 	KEY_9 = GLFW_KEY_9,
+
+	KEY_MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT,
+	KEY_MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
+	KEY_MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE,
 
 	KEY_UP = GLFW_KEY_UP,
 	KEY_DOWN = GLFW_KEY_DOWN,
@@ -53,6 +58,8 @@ public:
 
 	static bool keyRelease( const Key k );
 
+	static glm::vec2 getMousePosition();
+
 	
 	private :
 
@@ -62,6 +69,9 @@ public:
 	static void init();
 
 	friend void keyCallback( GLFWwindow* window, const int key, const int scancode,const int action, const int mods );
+
+	friend void mouseCallback(GLFWwindow* window, int button, int action, int mods);
+
 
 	static void SetCallback( GLFWwindow* window );
 

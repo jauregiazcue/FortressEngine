@@ -4,6 +4,8 @@
 #include <fe_transform.h>
 
 #include <fe_world.h>
+#include <fe_framebuffer.h>
+#include <fe_program.h>
 
 class FERender {
 public:
@@ -19,6 +21,7 @@ public:
 
 	void DebugCameraMovement();
 
+	FEFramebuffer color_picking_buffer_;
 	private :
 
 		void MoveCamera(glm::vec2 directions, glm::vec2 speed);
@@ -27,7 +30,9 @@ public:
 		glm::mat4 projection_;
 		glm::mat4 view_;
 
-		FETransformComponent cameraTransform_;
+		FETransformComponent camera_transform_;
+		std::shared_ptr<FEProgram> colour_picking_program_;
+		
 };
 
 

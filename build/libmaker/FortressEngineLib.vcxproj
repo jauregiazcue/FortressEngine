@@ -98,6 +98,7 @@
     <ClInclude Include="..\..\include\fe_chunk.h" />
     <ClInclude Include="..\..\include\fe_constants.h" />
     <ClInclude Include="..\..\include\fe_debugInterface.h" />
+    <ClInclude Include="..\..\include\fe_framebuffer.h" />
     <ClInclude Include="..\..\include\fe_input.h" />
     <ClInclude Include="..\..\include\fe_material.h" />
     <ClInclude Include="..\..\include\fe_program.h" />
@@ -119,6 +120,7 @@
     <ClCompile Include="..\..\deps\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="..\..\src\fe_chunk.cc" />
     <ClCompile Include="..\..\src\fe_debugInterface.cc" />
+    <ClCompile Include="..\..\src\fe_framebuffer.cc" />
     <ClCompile Include="..\..\src\fe_input.cc" />
     <ClCompile Include="..\..\src\fe_material.cc" />
     <ClCompile Include="..\..\src\fe_program.cc" />
@@ -129,8 +131,10 @@
     <ClCompile Include="..\..\src\fe_world.cc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\shaders\test.frag" />
-    <None Include="..\..\src\shaders\test.vert" />
+    <None Include="..\..\src\shaders\colourPicking.frag" />
+    <None Include="..\..\src\shaders\colourPicking.vert" />
+    <None Include="..\..\src\shaders\common.frag" />
+    <None Include="..\..\src\shaders\common.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

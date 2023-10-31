@@ -7,16 +7,20 @@
 #include <glm/vec4.hpp>
 #include <vector>
 #include <fe_world.h>
+#include <fe_window.h>
 
-class FEDebugInterface {
+class FEScene {
 public:
 	
 
-	FEDebugInterface();
+	FEScene();
 
-	~FEDebugInterface();
+	~FEScene();
 
-	void Draw(GLfloat deltaTime);
+	void Update(GLfloat deltaTime,FEWindow& window,int texture_id);
+
+	void ColourPickingInput(FEWindow& window);
+	void Interface(GLfloat deltaTime, int texture_id);
 
 	int active_voxel_;
 	int active_face_;

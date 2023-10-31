@@ -5,7 +5,7 @@
 #include <vector>
 #include <fe_material.h>
 #include <fe_transform.h>
-
+#include <fe_window.h>
 #include <fe_program.h>
 
 class FEWorld {
@@ -24,9 +24,26 @@ public:
 
 	void DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::mat4 view);
 
+	void DrawVoxelForColourPicking(
+		int voxel_id_, glm::mat4 projection, glm::mat4 view,int program_id);
+
+	void DrawFaceForColourPicking(
+		int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id);
+
 	void Culling();
 
 	void CheckFaces(int voxel_to_check);
+
+	enum PickingAction {
+		Break = 0,
+		Place = 1
+	};
+
+	void ColourPicking(FEWindow& window, bool destroy);
+
+	void DestroyVoxel(int voxel_id);
+
+	void PlaceVoxel(int voxel_id);
 
 	std::vector<FEMaterialComponent::Vertex> initFrontFace();
 	std::vector<FEMaterialComponent::Vertex> initRightFace();
@@ -35,16 +52,17 @@ public:
 	std::vector<FEMaterialComponent::Vertex> initTopFace();
 	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
-	
-
-
-	
 	std::vector<FEMaterialComponent> material_list_;
 	std::vector<FETransformComponent> transform_list_;
+
 	struct Faces {
 		int material_id_;
 		bool active_;
+		glm::vec3 color_id_;
+		int real_color_id_;
 	};
+
+	Faces* GetFaces(int voxel_id);
 
 	enum class VoxelType {
 		block = 0,

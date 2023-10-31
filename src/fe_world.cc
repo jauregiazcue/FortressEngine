@@ -1,4 +1,7 @@
 #include "fe_world.h"
+#include "fe_constants.h"
+
+#include <GLFW/glfw3.h>
 
 
 FEWorld::FEWorld() {
@@ -10,8 +13,8 @@ FEWorld::FEWorld() {
                             3,2,1 };
 
   std::shared_ptr<FEProgram> pro = std::make_shared<FEProgram>(std::vector<FEShader>{
-    FEShader("../src/shaders/test.vert", ShaderType::Vertex),
-      FEShader("../src/shaders/test.frag", ShaderType::Fragment) });
+    FEShader("../src/shaders/common.vert", ShaderType::Vertex),
+      FEShader("../src/shaders/common.frag", ShaderType::Fragment) });
 
   material_list_.push_back({ FEMaterialComponent{ pro,vertices,index } });
 
@@ -80,14 +83,9 @@ void FEWorld::createChunks() {
   for (int y = 0; y < voxel_per_row_; y++) {
     for (int z = 0; z < voxel_per_row_; z++) {
       for (int x = 0; x < voxel_per_row_; x++) {
-
+        Faces* faces = GetFaces(voxel_id_);
         voxel_list_.push_back({ voxel_id_,FEWorld::VoxelType::block,
-          {{ 0,true },
-           { 1,true },
-           { 2,true },
-           { 3,true },
-           { 4,true },
-           { 5,true }} });
+          {faces[0],faces[1],faces[2],faces[3],faces[4],faces[5]} });
         
         //One voxel = 6 faces = 12 triangles
         active_triangles_ += 12;
@@ -97,6 +95,25 @@ void FEWorld::createChunks() {
   }
 
   
+}
+
+FEWorld::Faces* FEWorld::GetFaces(int voxel_id) {
+  Faces faces_[6];
+
+  for (int i = 0; i < 6; i++) {
+    faces_[i].material_id_ = i;
+    faces_[i].active_ = true;
+
+    int color_id_helper = (voxel_id * how_many_faces_) + i;
+    faces_[i].real_color_id_ = color_id_helper;
+    faces_[i].color_id_ =    { ((color_id_helper & 0x000000FF) >> 0)  / 255.0f ,
+                               ((color_id_helper & 0x0000FF00) >> 8)  / 255.0f ,
+                               ((color_id_helper & 0x00FF0000) >> 16) / 255.0f };
+
+
+  }
+
+  return faces_;
 }
 
 void FEWorld::DrawVoxel(int voxel_id_, glm::mat4 projection, glm::mat4 view) {
@@ -116,12 +133,44 @@ void FEWorld::DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::ma
 
     material.enable();
 
+    material.setUpReferenceUniform("PickingColour",
+      voxel_list_[voxel_id_].faces_[face_id_].color_id_);
+
     material.setUpModel(transform_list_[voxel_id_].getTransform());
 
     material.setUpCamera(projection, view);
+
     material.bindAndRender();
   }
 }
+
+void FEWorld::DrawVoxelForColourPicking(int voxel_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
+  DrawFaceForColourPicking(voxel_id_, 0, projection, view,program_id);
+  DrawFaceForColourPicking(voxel_id_, 1, projection, view,program_id);
+  DrawFaceForColourPicking(voxel_id_, 2, projection, view,program_id);
+  DrawFaceForColourPicking(voxel_id_, 3, projection, view,program_id);
+  DrawFaceForColourPicking(voxel_id_, 4, projection, view,program_id);
+  DrawFaceForColourPicking(voxel_id_, 5, projection, view,program_id);
+}
+
+void FEWorld::DrawFaceForColourPicking(int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
+  if (voxel_list_[voxel_id_].faces_[face_id_].active_) {
+    FEMaterialComponent& material =
+      material_list_[voxel_list_[voxel_id_].faces_[face_id_].material_id_];
+
+    material.enableWithOtherProgram(program_id);
+
+    material.setUpReferenceUniformWithOtherProgram("PickingColour",
+      voxel_list_[voxel_id_].faces_[face_id_].color_id_, program_id);
+
+    material.setUpModelWithOtherProgram(transform_list_[voxel_id_].getTransform(), program_id);
+
+    material.setUpCameraWithOtherProgram(projection, view, program_id);
+
+    material.bindAndRender();
+  }
+}
+
 
 void FEWorld::Culling() {
   for (int i = 0; i < voxel_list_.size(); i++) {
@@ -168,6 +217,64 @@ void FEWorld::CheckFaces(int voxel_to_check) {
     voxel_list_[voxel_to_check].faces_[5].active_ = false;
     active_triangles_ -= 2;
   }
+}
+
+void FEWorld::ColourPicking(FEWindow& window, bool destroy) {
+  //Needed, but very slow
+  glFlush();
+  glFinish();
+
+  //Tell how the pixel is store
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  //Get the position of the mouse
+  double xpos, ypos;
+  glfwGetCursorPos(window.window_.get(), &xpos, &ypos);
+
+  //Get the height of the window
+  int height = 0;
+  glfwGetWindowSize(window.window_.get(),nullptr, &height);
+
+  //Get the pixel color 
+  unsigned char data[4];
+  glReadPixels(xpos, height - 1 - ypos, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+  //Get the id
+  int pickedID =
+    data[0] +
+    data[1] * 256 +
+    data[2] * 256 * 256;
+
+  //If the id is found, the voxel will be destroy or place
+  for (int i = 0; i < voxel_list_.size(); i++) {
+    for (int x = 0; x < how_many_faces_; x++) {
+
+      if (voxel_list_[i].faces_[x].real_color_id_ == pickedID) {
+        if (destroy) {
+          DestroyVoxel(i);
+          return;
+        }
+        else {
+          PlaceVoxel(i);
+        }
+        
+        
+      }
+    }
+  }
+}
+
+void FEWorld::DestroyVoxel(int voxel_id) {
+  voxel_list_[voxel_id].faces_[0].active_ = false;
+  voxel_list_[voxel_id].faces_[1].active_ = false;
+  voxel_list_[voxel_id].faces_[2].active_ = false;
+  voxel_list_[voxel_id].faces_[3].active_ = false;
+  voxel_list_[voxel_id].faces_[4].active_ = false;
+  voxel_list_[voxel_id].faces_[5].active_ = false;
+}
+
+void FEWorld::PlaceVoxel(int voxel_id) {
+
 }
 
 
@@ -333,5 +440,7 @@ std::vector<FEMaterialComponent::Vertex> FEWorld::initBottomFace() {
 
   return vertices;
 }
+
+
 
 

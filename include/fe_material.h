@@ -31,12 +31,24 @@ public:
 	~FEMaterialComponent();
 
 	void enable();
+	void enableWithOtherProgram(int program_id);
 
 	void bindAndRender();
 
 	void setUpModel(const glm::mat4x4& transform);
 
 	void setUpCamera(const glm::mat4x4& projection, const glm::mat4x4& view);
+
+	void setUpModelWithOtherProgram(const glm::mat4x4& transform,int program_id);
+
+	void setUpCameraWithOtherProgram(
+		const glm::mat4x4& projection, const glm::mat4x4& view, int program_id);
+
+	GLint getUniformLocation(std::string name);
+	void setUpReferenceUniform(std::string name, const glm::vec3 value);
+
+	void setUpReferenceUniformWithOtherProgram(
+		std::string name, const glm::vec3 value, int program_id);
 
 private:
 	std::shared_ptr<FEProgram> program_;

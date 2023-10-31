@@ -28,7 +28,7 @@ int main(void) {
 
   bool wireframe = false;
 
-  FEDebugInterface debugInterface;
+  FEScene scene;
 
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
@@ -39,10 +39,9 @@ int main(void) {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
-
     renderer.DebugCameraMovement();
-    renderer.Render(debugInterface.world_);
-    debugInterface.Draw(deltaTime);
+    renderer.Render(scene.world_);
+    scene.Update(deltaTime,fe_window, renderer.color_picking_buffer_.texture_id_);
 
     fe_window.swap();
   }

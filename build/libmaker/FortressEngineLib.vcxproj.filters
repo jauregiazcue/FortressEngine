@@ -42,6 +42,9 @@
     <ClInclude Include="..\..\include\fe_debugInterface.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\fe_framebuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\fe_input.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -101,6 +104,9 @@
     <ClCompile Include="..\..\src\fe_debugInterface.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\fe_framebuffer.cc">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\fe_input.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -127,10 +133,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\shaders\test.frag">
+    <None Include="..\..\src\shaders\colourPicking.frag">
       <Filter>src\shaders</Filter>
     </None>
-    <None Include="..\..\src\shaders\test.vert">
+    <None Include="..\..\src\shaders\colourPicking.vert">
+      <Filter>src\shaders</Filter>
+    </None>
+    <None Include="..\..\src\shaders\common.frag">
+      <Filter>src\shaders</Filter>
+    </None>
+    <None Include="..\..\src\shaders\common.vert">
       <Filter>src\shaders</Filter>
     </None>
   </ItemGroup>

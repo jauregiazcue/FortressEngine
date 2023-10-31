@@ -1,6 +1,9 @@
 
 // Author : jauregiaz
 #include "fe_input.h"
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 
 std::unordered_map<uint16_t, key_state> FEInput::keymap_;
@@ -20,6 +23,24 @@ void keyCallback( GLFWwindow* window, const int key, const int scancode, const i
  
 
 }
+
+void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
+  ImGui_ImplGlfw_MouseButtonCallback(window,button,action,mods);
+
+  auto iterator = FEInput::keymap_.find(button);
+  if (iterator != FEInput::keymap_.end()) {
+
+    if (action == GLFW_PRESS) {
+      iterator->second.down = true;
+    }
+    if (action == GLFW_RELEASE) {
+      iterator->second.down = false;
+    }
+
+  }
+}
+
+
 
 void FEInput::init() {
   key_state state;
@@ -42,6 +63,10 @@ void FEInput::init() {
   keymap_[GLFW_KEY_7] = state;
   keymap_[GLFW_KEY_8] = state;
   keymap_[GLFW_KEY_9] = state;
+
+  keymap_[GLFW_MOUSE_BUTTON_LEFT] = state;
+  keymap_[GLFW_MOUSE_BUTTON_RIGHT] = state;
+  keymap_[GLFW_MOUSE_BUTTON_MIDDLE] = state;
 
   keymap_[GLFW_KEY_UP] = state;
   keymap_[GLFW_KEY_DOWN] = state;
@@ -72,8 +97,11 @@ bool FEInput::keyRelease( const Key k ) {
   return !km->previous_down && km->change;
 }
 
+
+
 void FEInput::SetCallback( GLFWwindow* window ) {
   glfwSetKeyCallback( window, keyCallback );
+  glfwSetMouseButtonCallback(window, mouseCallback);
 }
 
 void FEInput::nextFrame() {

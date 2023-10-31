@@ -3,10 +3,11 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <fe_input.h>
 
 // Author : jauregiaz
 
-FEDebugInterface::FEDebugInterface() {
+FEScene::FEScene() {
   active_voxel_ = 0;
   active_face_ = 0;
   wireframe_ = false;
@@ -16,11 +17,26 @@ FEDebugInterface::FEDebugInterface() {
   world_voxel_per_row_ = 1;
 }
 
-FEDebugInterface::~FEDebugInterface() {
+FEScene::~FEScene() {
 
 }
 
-void FEDebugInterface::Draw(GLfloat deltaTime) {
+void FEScene::Update(GLfloat deltaTime, FEWindow& window, int texture_id) {
+  ColourPickingInput(window);
+  Interface(deltaTime, texture_id);
+}
+
+void FEScene::ColourPickingInput(FEWindow& window) {
+  if (FEInput::keyPress(Key::KEY_MOUSE_LEFT)) {
+    world_.ColourPicking(window, true);
+  }
+
+  if (FEInput::keyPress(Key::KEY_MOUSE_LEFT)) {
+    world_.ColourPicking(window, true);
+  }
+}
+
+void FEScene::Interface(GLfloat deltaTime, int texture_id) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
 
@@ -30,6 +46,10 @@ void FEDebugInterface::Draw(GLfloat deltaTime) {
   ImGui::SetNextWindowSize(ImVec2(200, 800), ImGuiCond_Always);
 
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
+
+  ImVec2 wsize = {200,200};
+  ImGui::Image((ImTextureID)texture_id,
+    wsize, { 0,1 }, { 1,0 });
 
   if (world_made_) {
     fps_ = 1.0f / deltaTime;
@@ -84,7 +104,7 @@ void FEDebugInterface::Draw(GLfloat deltaTime) {
       world_culling_ = false;
     }
 
-    
+
     if (ImGui::InputInt("VoxelPerRow", &world_voxel_per_row_)) {
       if (world_voxel_per_row_ < 0) {
         world_voxel_per_row_ = 0;
@@ -101,7 +121,7 @@ void FEDebugInterface::Draw(GLfloat deltaTime) {
     }
   }
 
-  
+
 
   ImGui::End();
 
