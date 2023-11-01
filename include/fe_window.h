@@ -15,7 +15,7 @@ class FEWindow {
 public:
 	
 
-	FEWindow(glm::vec4 background_color);
+	FEWindow();
 
 	~FEWindow();
 
@@ -26,11 +26,6 @@ public:
 	void swap();
 
 	void clear();
-
-	void changeBackgroundColor(glm::vec4 background_color);
-
-	
-
 
 	private :
 	friend void resizeWindow(GLFWwindow* window, int width, int height);

@@ -3,7 +3,6 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <fe_input.h>
 
 // Author : jauregiaz
 
@@ -15,6 +14,7 @@ FEScene::FEScene() {
   world_made_ = false;
   world_culling_ = true;
   world_voxel_per_row_ = 1;
+  
 }
 
 FEScene::~FEScene() {
@@ -34,17 +34,19 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
   ImGui::NewFrame();
 
   ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-  ImGui::SetNextWindowSize(ImVec2(200, 800), ImGuiCond_Always);
+  ImGui::SetNextWindowSize(ImVec2(window_size_x, window_size_y), ImGuiCond_Always);
 
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
 
-  ImVec2 wsize = {200,200};
-  ImGui::Image((ImTextureID)texture_id,
-    wsize, { 0,1 }, { 1,0 });
+  
 
   if (world_made_) {
-    fps_ = 1.0f / deltaTime;
 
+    ImVec2 wsize = { 200,200 };
+    ImGui::Image((ImTextureID)texture_id,
+      wsize, { 0,1 }, { 1,0 });
+
+    fps_ = 1.0f / deltaTime;
     ImGui::Text("FPS : %03.00f", fps_);
     ImGui::Text("Active Triangles : %d", world_.active_triangles_);
     ImGui::Text("Active Faces : %d", world_.active_triangles_ / 2);
@@ -82,6 +84,7 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
     if (ImGui::Button("Destroy World")) {
       world_.voxel_list_.clear();
       world_.transform_list_.clear();
+      world_.active_triangles_ = 0;
       world_made_ = false;
     }
   }
@@ -90,13 +93,13 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
     if (ImGui::Button("True")) {
       world_culling_ = true;
     }
-
+    ImGui::SameLine();
     if (ImGui::Button("False")) {
       world_culling_ = false;
     }
 
-
-    if (ImGui::InputInt("VoxelPerRow", &world_voxel_per_row_)) {
+    ImGui::Text("VoxelPerRow");
+    if (ImGui::InputInt("##VoxelPerRow", &world_voxel_per_row_)) {
       if (world_voxel_per_row_ < 0) {
         world_voxel_per_row_ = 0;
       }

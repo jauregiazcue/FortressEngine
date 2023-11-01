@@ -16,8 +16,8 @@
 
 void GLFWindowDestroy::operator()(GLFWwindow* ptr) { glfwDestroyWindow(ptr); }
 
-FEWindow::FEWindow(glm::vec4 background_color) {
-  background_color_ = background_color;
+FEWindow::FEWindow() {
+
 }
 
 FEWindow::~FEWindow() {
@@ -30,7 +30,7 @@ int FEWindow::init() {
     return -1;
   }
   // Create a windowed mode window and its OpenGL context 
-  window_.reset(glfwCreateWindow(kWindowWidth, kWindowHeight, "Palace Engine", NULL, NULL));
+  window_.reset(glfwCreateWindow(kWindowWidth, kWindowHeight, kWindowName, NULL, NULL));
   if(!window_.get()) {
     glfwTerminate();
     return -1;
@@ -72,13 +72,9 @@ bool FEWindow::isDone() {
 void FEWindow::clear() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glClearColor(background_color_.r,background_color_.g,background_color_.b,background_color_.a);
+  glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
 
   FEInput::SetCallback(window_.get());
-}
-
-void FEWindow::changeBackgroundColor(glm::vec4 background_color) {
-  background_color_ = background_color;
 }
 
 void FEWindow::swap() {

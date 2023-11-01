@@ -34,11 +34,6 @@ public:
 
 	void CheckFaces(int voxel_to_check);
 
-	enum PickingAction {
-		Break = 0,
-		Place = 1
-	};
-
 	void ColourPicking(int colour_id, bool destroy);
 
 	void DestroyVoxel(int voxel_id);

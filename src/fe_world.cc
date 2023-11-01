@@ -68,7 +68,7 @@ void FEWorld::createChunks() {
     for (int z = 0; z < voxel_per_row_; z++) {
       for (int x = 0; x < voxel_per_row_; x++) {
         transform_list_.push_back(FETransformComponent{
-                              { (float)x * 1.5f,(float)y * -1.5f,(float)z * -1.5f },
+                              { (float)x ,(float)-y,(float)-z },
                               { 0.0f,0.0f,0.0f },
                               { 1.0f,1.0f,1.0f } });
 
@@ -241,29 +241,53 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
   //If the id is found, the voxel will be destroy or place
   for (int i = 0; i < voxel_list_.size(); i++) {
     for (int x = 0; x < how_many_faces_; x++) {
-
-      if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
-        if (destroy) {
-          DestroyVoxel(i);
-          return;
+      if (voxel_list_[i].type_ != VoxelType::air) {
+        if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
+          if (destroy) {
+            DestroyVoxel(i);
+            return;
+          }
+          else {
+            PlaceVoxel(i);
+          }
         }
-        else {
-          PlaceVoxel(i);
-        }
-        
-        
       }
     }
   }
 }
 
 void FEWorld::DestroyVoxel(int voxel_id) {
-  voxel_list_[voxel_id].faces_[0].active_ = false;
-  voxel_list_[voxel_id].faces_[1].active_ = false;
-  voxel_list_[voxel_id].faces_[2].active_ = false;
-  voxel_list_[voxel_id].faces_[3].active_ = false;
-  voxel_list_[voxel_id].faces_[4].active_ = false;
-  voxel_list_[voxel_id].faces_[5].active_ = false;
+
+  if (voxel_list_[voxel_id].faces_[0].active_) {
+    voxel_list_[voxel_id].faces_[0].active_ = false;
+    active_triangles_ -= 2;
+  }
+
+  if (voxel_list_[voxel_id].faces_[1].active_) {
+    voxel_list_[voxel_id].faces_[1].active_ = false;
+    active_triangles_ -= 2;
+  }
+
+  if (voxel_list_[voxel_id].faces_[2].active_) {
+    voxel_list_[voxel_id].faces_[2].active_ = false;
+    active_triangles_ -= 2;
+  }
+
+  if (voxel_list_[voxel_id].faces_[3].active_) {
+    voxel_list_[voxel_id].faces_[3].active_ = false;
+    active_triangles_ -= 2;
+  }
+
+  if (voxel_list_[voxel_id].faces_[4].active_) {
+    voxel_list_[voxel_id].faces_[4].active_ = false;
+    active_triangles_ -= 2;
+  }
+  
+  if (voxel_list_[voxel_id].faces_[5].active_) {
+    voxel_list_[voxel_id].faces_[5].active_ = false;
+    active_triangles_ -= 2;
+  }
+  
 }
 
 void FEWorld::PlaceVoxel(int voxel_id) {

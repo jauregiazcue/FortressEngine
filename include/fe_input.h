@@ -26,11 +26,7 @@ enum class Key {
 	KEY_7 = GLFW_KEY_7,
 	KEY_8 = GLFW_KEY_8,
 	KEY_9 = GLFW_KEY_9,
-
-	KEY_MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT,
-	KEY_MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
-	KEY_MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE,
-
+	
 	KEY_UP = GLFW_KEY_UP,
 	KEY_DOWN = GLFW_KEY_DOWN,
 	KEY_LEFT = GLFW_KEY_LEFT,
@@ -38,6 +34,12 @@ enum class Key {
 
 	KEY_ENTER = GLFW_KEY_ENTER
 
+};
+
+enum class Mouse {
+	KEY_MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT,
+	KEY_MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
+	KEY_MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE
 };
 
 struct key_state {
@@ -58,13 +60,18 @@ public:
 
 	static bool keyRelease( const Key k );
 
-	static glm::vec2 getMousePosition();
+	static bool mouseKeyUp(const Mouse k);
 
+	static bool mouseKeyDown(const Mouse k);
+
+	static bool mouseKeyPress(const Mouse k);
+
+	static bool mouseKeyRelease(const Mouse k);
 	
 	private :
 
 	static std::unordered_map<uint16_t, key_state> keymap_;
-
+	static std::unordered_map<uint16_t, key_state> mousekeymap_;
 
 	static void init();
 

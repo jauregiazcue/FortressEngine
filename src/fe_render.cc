@@ -1,25 +1,22 @@
-#include "fe_render.h"
-#include <fe_input.h>
+#include <fe_render.h>
 #include <glm/ext/matrix_clip_space.hpp>
 
-#include "fe_constants.h"
-#include "fe_shader.h"
+#include <fe_constants.h>
+#include <fe_shader.h>
+#include <fe_input.h>
 
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-#include <memory>
 
 FERender::FERender() {
 
 
 	projection_ = glm::perspective(glm::radians(45.0f), 
-																 (float)kWindowWidth / (float)kWindowHeight, 0.1f, 200.0f);
+																 (float)kWindowWidth / (float)kWindowHeight,
+																 kRenderPerspectiveNear, kRenderPerspectiveFar);
 
 
-	camera_transform_.setRotation({ 0.0f,0.0f,0.0f });
+	
 	view_ = glm::inverse(camera_transform_.getTransform());
+
 	colour_picking_program_ = std::make_shared<FEProgram>(std::vector<FEShader>{
 		FEShader("../src/shaders/colourPicking.vert", ShaderType::Vertex),
 			FEShader("../src/shaders/colourPicking.frag", ShaderType::Fragment) });
@@ -31,7 +28,7 @@ FERender::FERender() {
 void FERender::Render(FEWorld& world, FEWindow& window) {
 	glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
@@ -39,18 +36,18 @@ void FERender::Render(FEWorld& world, FEWindow& window) {
 			colour_picking_program_.get()->getId());
 	}
 
-	if (FEInput::keyPress(Key::KEY_MOUSE_LEFT)) {
+	if (FEInput::mouseKeyDown(Mouse::KEY_MOUSE_LEFT)) {
 		ColourPicking(window);
 		destroy_ = true;
 	}
 
-	if (FEInput::keyPress(Key::KEY_MOUSE_RIGHT)) {
+	if (FEInput::mouseKeyDown(Mouse::KEY_MOUSE_RIGHT)) {
 		ColourPicking(window);
 		destroy_ = false;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
+	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
@@ -120,34 +117,32 @@ void FERender::RotateCamera(glm::vec3 added_rotation) {
 	view_ = glm::inverse(camera_transform_.getTransform());
 }
 
-
 void FERender::DebugCameraMovement() {
 	if (FEInput::keyDown(Key::KEY_W)) {
-		MoveCamera({ 1.0f,0.0f }, { 0.5f,0.0f });
+		MoveCamera({ 1.0f,0.0f }, { kCameraMovementSpeed,0.0f });
 	}
 	if (FEInput::keyDown(Key::KEY_S)) {
-		MoveCamera({ -1.0f,0.0f }, { 0.5f,0.0f });
+		MoveCamera({ -1.0f,0.0f }, { kCameraMovementSpeed,0.0f });
 	}
 	if (FEInput::keyDown(Key::KEY_A)) {
-		MoveCamera({ 0.0f,-1.0f }, { 0.0f,0.5f });
+		MoveCamera({ 0.0f,-1.0f }, { 0.0f,kCameraMovementSpeed });
 	}
 	if (FEInput::keyDown(Key::KEY_D)) {
-		MoveCamera({ 0.0f,1.0f }, { 0.0f,0.5f });
+		MoveCamera({ 0.0f,1.0f }, { 0.0f,kCameraMovementSpeed });
 	}
 
 	if (FEInput::keyDown(Key::KEY_UP)) {
-		RotateCamera({ 1.0f,0.0f,0.0f });
+		RotateCamera({ kCameraRotationSpeed,0.0f,0.0f });
 	}
 	if (FEInput::keyDown(Key::KEY_DOWN)) {
-		RotateCamera({ -1.0f,0.0f,0.0f });
+		RotateCamera({ -kCameraRotationSpeed,0.0f,0.0f });
 	}
 	if (FEInput::keyDown(Key::KEY_LEFT)) {
-		RotateCamera({ 0.0f,1.0f,0.0f });
+		RotateCamera({ 0.0f,kCameraRotationSpeed,0.0f });
 	}
 	if (FEInput::keyDown(Key::KEY_RIGHT)) {
-		RotateCamera({ 0.0f,-1.0f,0.0f });
+		RotateCamera({ 0.0f,-kCameraRotationSpeed,0.0f });
 	}
-
 
 }
 

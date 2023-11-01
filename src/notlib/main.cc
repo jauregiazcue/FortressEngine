@@ -2,23 +2,15 @@
 #include <GLFW/glfw3.h>
 
 #include "fe_window.h"
-
-#include "fe_transform.h"
-#include "fe_material.h"
-#include "fe_program.h"
 #include "fe_render.h"
-
-#include "fe_input.h"
 #include "fe_debugInterface.h"
 
-#include <glm/gtc/type_ptr.hpp>
-#include <fe_world.h>
 
 
 
 int main(void) {
 
-  FEWindow fe_window{ {1.0f,1.0f,1.0f,1.0f} };
+  FEWindow fe_window;
   if (fe_window.init() != 0) {
     return -1;
   }
