@@ -38,7 +38,7 @@ public:
 	std::unique_ptr<GLFWwindow,GLFWindowDestroy> window_;
 	glm::vec4 background_color_;
 	
-	friend class FEWorld;
+	friend class FERender;
 };
 
 

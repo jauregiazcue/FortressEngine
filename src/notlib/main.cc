@@ -40,8 +40,9 @@ int main(void) {
     lastFrame = currentFrame;
 
     renderer.DebugCameraMovement();
-    renderer.Render(scene.world_);
-    scene.Update(deltaTime,fe_window, renderer.color_picking_buffer_.texture_id_);
+    renderer.Render(scene.world_,fe_window);
+    scene.Update(deltaTime,renderer.colour_id_,renderer.destroy_,
+      renderer.color_picking_buffer_.texture_id_);
 
     fe_window.swap();
   }

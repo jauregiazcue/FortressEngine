@@ -17,7 +17,7 @@ public:
 
 	~FEScene();
 
-	void Update(GLfloat deltaTime,FEWindow& window,int texture_id);
+	void Update(GLfloat deltaTime,int colour_id,bool destroy,int texture_id);
 
 	void ColourPickingInput(FEWindow& window);
 	void Interface(GLfloat deltaTime, int texture_id);

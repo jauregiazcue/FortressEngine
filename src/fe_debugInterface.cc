@@ -21,20 +21,11 @@ FEScene::~FEScene() {
 
 }
 
-void FEScene::Update(GLfloat deltaTime, FEWindow& window, int texture_id) {
-  ColourPickingInput(window);
+void FEScene::Update(GLfloat deltaTime, int colour_id, bool destroy,int texture_id) {
+  world_.ColourPicking(colour_id, true);
   Interface(deltaTime, texture_id);
 }
 
-void FEScene::ColourPickingInput(FEWindow& window) {
-  if (FEInput::keyPress(Key::KEY_MOUSE_LEFT)) {
-    world_.ColourPicking(window, true);
-  }
-
-  if (FEInput::keyPress(Key::KEY_MOUSE_LEFT)) {
-    world_.ColourPicking(window, true);
-  }
-}
 
 void FEScene::Interface(GLfloat deltaTime, int texture_id) {
   ImGui_ImplOpenGL3_NewFrame();

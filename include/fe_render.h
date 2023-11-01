@@ -11,7 +11,7 @@ class FERender {
 public:
 	FERender();
 
-	void Render(FEWorld& world);
+	void Render(FEWorld& world, FEWindow& window);
 
 	void SetCameraPosition(glm::vec3 position);
 
@@ -21,7 +21,12 @@ public:
 
 	void DebugCameraMovement();
 
+	void ColourPicking(FEWindow& window);
+
 	FEFramebuffer color_picking_buffer_;
+
+	int colour_id_;
+	bool destroy_;
 	private :
 
 		void MoveCamera(glm::vec2 directions, glm::vec2 speed);
@@ -32,6 +37,7 @@ public:
 
 		FETransformComponent camera_transform_;
 		std::shared_ptr<FEProgram> colour_picking_program_;
+		
 		
 };
 

@@ -39,7 +39,7 @@ public:
 		Place = 1
 	};
 
-	void ColourPicking(FEWindow& window, bool destroy);
+	void ColourPicking(int colour_id, bool destroy);
 
 	void DestroyVoxel(int voxel_id);
 

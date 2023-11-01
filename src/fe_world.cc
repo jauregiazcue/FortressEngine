@@ -117,12 +117,15 @@ FEWorld::Faces* FEWorld::GetFaces(int voxel_id) {
 }
 
 void FEWorld::DrawVoxel(int voxel_id_, glm::mat4 projection, glm::mat4 view) {
-  DrawFace(voxel_id_, 0, projection, view);
-  DrawFace(voxel_id_, 1, projection, view);
-  DrawFace(voxel_id_, 2, projection, view);
-  DrawFace(voxel_id_, 3, projection, view);
-  DrawFace(voxel_id_, 4, projection, view);
-  DrawFace(voxel_id_, 5, projection, view);
+  if (voxel_list_[voxel_id_].type_ != VoxelType::air) {
+    DrawFace(voxel_id_, 0, projection, view);
+    DrawFace(voxel_id_, 1, projection, view);
+    DrawFace(voxel_id_, 2, projection, view);
+    DrawFace(voxel_id_, 3, projection, view);
+    DrawFace(voxel_id_, 4, projection, view);
+    DrawFace(voxel_id_, 5, projection, view);
+  }
+  
 }
 
 
@@ -145,12 +148,15 @@ void FEWorld::DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::ma
 }
 
 void FEWorld::DrawVoxelForColourPicking(int voxel_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
-  DrawFaceForColourPicking(voxel_id_, 0, projection, view,program_id);
-  DrawFaceForColourPicking(voxel_id_, 1, projection, view,program_id);
-  DrawFaceForColourPicking(voxel_id_, 2, projection, view,program_id);
-  DrawFaceForColourPicking(voxel_id_, 3, projection, view,program_id);
-  DrawFaceForColourPicking(voxel_id_, 4, projection, view,program_id);
-  DrawFaceForColourPicking(voxel_id_, 5, projection, view,program_id);
+  if (voxel_list_[voxel_id_].type_ != VoxelType::air) {
+    DrawFaceForColourPicking(voxel_id_, 0, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id_, 1, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id_, 2, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id_, 3, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id_, 4, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id_, 5, projection, view, program_id);
+  }
+  
 }
 
 void FEWorld::DrawFaceForColourPicking(int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
@@ -179,18 +185,20 @@ void FEWorld::Culling() {
 }
 
 void FEWorld::CheckFaces(int voxel_to_check) {
-
+  int deactive_faces = 0;
   //LEFT FACE CHECKING
   if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[1].active_ = false;
     active_triangles_ -= 2;
+    deactive_faces += 1;
   }
 
-  //RIGHTA FACE CHECKING
+  //RIGHT FACE CHECKING
   if (voxel_to_check + 1 < voxel_list_.size() 
     && ((voxel_to_check + 1) % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[3].active_ = false;
     active_triangles_ -= 2;
+    deactive_faces += 1;
   }
 
   int voxel_to_check_2 = voxel_to_check % (voxel_per_row_ * voxel_per_row_);
@@ -198,6 +206,7 @@ void FEWorld::CheckFaces(int voxel_to_check) {
   if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxel_per_row_) {
     voxel_list_[voxel_to_check].faces_[0].active_ = false;
     active_triangles_ -= 2;
+    deactive_faces += 1;
   }
 
   int last_row = ((voxel_per_row_ * voxel_per_row_) - voxel_per_row_);
@@ -206,50 +215,34 @@ void FEWorld::CheckFaces(int voxel_to_check) {
     && voxel_to_check_2 < last_row) {
     voxel_list_[voxel_to_check].faces_[2].active_ = false;
     active_triangles_ -= 2;
+    deactive_faces += 1;
   }
-
+  //TOP FACE CHECKING
   if (voxel_to_check >= (voxel_per_row_ * voxel_per_row_)) {
     voxel_list_[voxel_to_check].faces_[4].active_ = false;
     active_triangles_ -= 2;
+    deactive_faces += 1;
   }
-
+  //BOTTOM FACE CHECKING
   if (voxel_to_check < ((voxel_per_row_ * voxel_per_row_ * voxel_per_row_) - (voxel_per_row_ * voxel_per_row_))) {
     voxel_list_[voxel_to_check].faces_[5].active_ = false;
     active_triangles_ -= 2;
+    deactive_faces += 1;
+  }
+
+  if (deactive_faces >= 6) {
+    voxel_list_[voxel_to_check].type_ = VoxelType::air;
   }
 }
 
-void FEWorld::ColourPicking(FEWindow& window, bool destroy) {
-  //Needed, but very slow
-  glFlush();
-  glFinish();
-
-  //Tell how the pixel is store
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-  //Get the position of the mouse
-  double xpos, ypos;
-  glfwGetCursorPos(window.window_.get(), &xpos, &ypos);
-
-  //Get the height of the window
-  int height = 0;
-  glfwGetWindowSize(window.window_.get(),nullptr, &height);
-
-  //Get the pixel color 
-  unsigned char data[4];
-  glReadPixels(xpos, height - 1 - ypos, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-  //Get the id
-  int pickedID =
-    data[0] +
-    data[1] * 256 +
-    data[2] * 256 * 256;
+void FEWorld::ColourPicking( int colour_id,bool destroy) {
+  
 
   //If the id is found, the voxel will be destroy or place
   for (int i = 0; i < voxel_list_.size(); i++) {
     for (int x = 0; x < how_many_faces_; x++) {
 
-      if (voxel_list_[i].faces_[x].real_color_id_ == pickedID) {
+      if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
         if (destroy) {
           DestroyVoxel(i);
           return;

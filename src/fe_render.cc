@@ -23,9 +23,12 @@ FERender::FERender() {
 	colour_picking_program_ = std::make_shared<FEProgram>(std::vector<FEShader>{
 		FEShader("../src/shaders/colourPicking.vert", ShaderType::Vertex),
 			FEShader("../src/shaders/colourPicking.frag", ShaderType::Fragment) });
+
+	colour_id_ = 0;
+	destroy_ = false;
 }
 
-void FERender::Render(FEWorld& world) {
+void FERender::Render(FEWorld& world, FEWindow& window) {
 	glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -35,6 +38,16 @@ void FERender::Render(FEWorld& world) {
 		world.DrawVoxelForColourPicking(voxel,projection_,view_,
 			colour_picking_program_.get()->getId());
 	}
+
+	if (FEInput::keyPress(Key::KEY_MOUSE_LEFT)) {
+		ColourPicking(window);
+		destroy_ = true;
+	}
+
+	if (FEInput::keyPress(Key::KEY_MOUSE_RIGHT)) {
+		ColourPicking(window);
+		destroy_ = false;
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
@@ -43,6 +56,7 @@ void FERender::Render(FEWorld& world) {
 	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
 		world.DrawVoxel(voxel, projection_, view_);
 	}
+
 
 }
 
@@ -57,8 +71,7 @@ void FERender::SetCameraRotation(glm::vec3 rotation) {
 	view_ = glm::inverse(camera_transform_.getTransform());
 }
 
-glm::vec3 FERender::GetCameraPosition()
-{
+glm::vec3 FERender::GetCameraPosition() {
 	return camera_transform_.getPosition();
 }
 
@@ -136,4 +149,31 @@ void FERender::DebugCameraMovement() {
 	}
 
 
+}
+
+void FERender::ColourPicking(FEWindow& window) {
+	//Needed, but very slow
+	glFlush();
+	glFinish();
+
+	//Tell how the pixel is store
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	//Get the position of the mouse
+	double xpos, ypos;
+	glfwGetCursorPos(window.window_.get(), &xpos, &ypos);
+
+	//Get the height of the window
+	int height = 0;
+	glfwGetWindowSize(window.window_.get(), nullptr, &height);
+
+	//Get the pixel color 
+	unsigned char data[4];
+	glReadPixels(xpos, height - 1 - ypos, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	//Get the id
+	colour_id_ =
+		data[0] +
+		data[1] * 256 +
+		data[2] * 256 * 256;
 }
