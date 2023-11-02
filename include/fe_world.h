@@ -33,10 +33,12 @@ public:
 	void Culling();
 
 	void CheckFaces(int voxel_to_check);
+	
 
 	void ColourPicking(int colour_id, bool destroy);
 
 	void DestroyVoxel(int voxel_id);
+	void UpdateFacesWhenDestroy(int voxel_to_check);
 
 	void PlaceVoxel(int voxel_id);
 
@@ -62,7 +64,7 @@ public:
 	enum class VoxelType {
 		block = 0,
 		air = 1,
-		other = 2
+		innactive = 2
 	};
 
 

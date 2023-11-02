@@ -68,7 +68,7 @@ void FEWorld::createChunks() {
     for (int y = 0; y < voxel_per_row_; y++) {
       for (int z = 0; z < voxel_per_row_; z++) {
         transform_list_.push_back(FETransformComponent{
-                              { (float)x * 1.5f ,(float)-y * 1.5f,(float)-z * 1.5f},
+                              { (float)x,(float)-y,(float)-z},
                               { 0.0f,0.0f,0.0f },
                               { 1.0f,1.0f,1.0f } });
 
@@ -231,11 +231,9 @@ void FEWorld::CheckFaces(int voxel_to_check) {
     active_triangles_ -= 2;
     deactive_faces += 1;
   } 
-
-  if (deactive_faces >= 6) {
-    voxel_list_[voxel_to_check].type_ = VoxelType::air;
-  }
 }
+
+
 
 void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
@@ -247,6 +245,7 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
           if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
             if (destroy) {
               DestroyVoxel(i);
+              UpdateFacesWhenDestroy(i);
               return;
             }
             else {
@@ -261,7 +260,7 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
 }
 
 void FEWorld::DestroyVoxel(int voxel_id) {
-
+  voxel_list_[voxel_id].type_ = VoxelType::air;
   if (voxel_list_[voxel_id].faces_[0].active_) {
     voxel_list_[voxel_id].faces_[0].active_ = false;
     active_triangles_ -= 2;
@@ -292,6 +291,59 @@ void FEWorld::DestroyVoxel(int voxel_id) {
     active_triangles_ -= 2;
   }
   
+}
+
+void FEWorld::UpdateFacesWhenDestroy(int voxel_to_check) {
+  //FRONT FACE OF THE BACK VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
+  int new_voxel_to_check = voxel_to_check + 1;
+  if (new_voxel_to_check < voxel_list_.size()) {
+    if (new_voxel_to_check % voxel_per_row_ != 0
+      && voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[0].active_ = true;
+      active_triangles_ += 2;
+    }
+  }
+  //BACK FACE OF THE FRONT VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
+  new_voxel_to_check = voxel_to_check - 1;
+  if (new_voxel_to_check >= 0) {
+    if ((voxel_to_check % voxel_per_row_) != 0 &&
+      voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[2].active_ = true;
+      active_triangles_ += 2;
+    }
+  }
+  //TOP FACE OF THE BOTTOM VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
+  new_voxel_to_check = voxel_to_check + voxel_per_row_;
+  if (new_voxel_to_check < voxel_list_.size()) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[4].active_ = true;
+      active_triangles_ += 2;
+    }
+  }
+  //BOTTOM FACE OF THE TOP VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
+  new_voxel_to_check = voxel_to_check - voxel_per_row_;
+  if (new_voxel_to_check >= 0) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[5].active_ = true;
+      active_triangles_ += 2;
+    }
+  }
+  
+  new_voxel_to_check = voxel_to_check + (voxel_per_row_ * voxel_per_row_);
+  if (new_voxel_to_check < voxel_list_.size()) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[1].active_ = true;
+      active_triangles_ += 2;
+    }
+  }
+
+  new_voxel_to_check = voxel_to_check - (voxel_per_row_ * voxel_per_row_);
+  if (new_voxel_to_check >= 0) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[3].active_ = true;
+      active_triangles_ += 2;
+    }
+  }
 }
 
 void FEWorld::PlaceVoxel(int voxel_id) {

@@ -26,6 +26,7 @@ FERender::FERender() {
 }
 
 void FERender::Render(FEWorld& world, FEWindow& window) {
+	colour_id_ = -1;
 	glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
 	
 	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);

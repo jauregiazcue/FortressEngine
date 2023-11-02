@@ -22,7 +22,7 @@ FEScene::~FEScene() {
 }
 
 void FEScene::Update(GLfloat deltaTime, int colour_id, bool destroy,int texture_id) {
-  world_.ColourPicking(colour_id, true);
+  world_.ColourPicking(colour_id, destroy);
   Interface(deltaTime, texture_id);
 }
 
