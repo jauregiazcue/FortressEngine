@@ -38,12 +38,12 @@ void FERender::Render(FEWorld& world, FEWindow& window) {
 			colour_picking_program_.get()->getId());
 	}
 
-	if (FEInput::mouseKeyDown(Mouse::KEY_MOUSE_LEFT)) {
+	if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_LEFT)) {
 		ColourPicking(window);
 		destroy_ = true;
 	}
 
-	if (FEInput::mouseKeyDown(Mouse::KEY_MOUSE_RIGHT)) {
+	if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_RIGHT)) {
 		ColourPicking(window);
 		destroy_ = false;
 	}

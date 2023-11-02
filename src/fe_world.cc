@@ -249,7 +249,7 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
               return;
             }
             else {
-              PlaceVoxel(i);
+              PlaceVoxel(i,x);
             }
           }
         }
@@ -346,7 +346,41 @@ void FEWorld::UpdateFacesWhenDestroy(int voxel_to_check) {
   }
 }
 
-void FEWorld::PlaceVoxel(int voxel_id) {
+void FEWorld::PlaceVoxel(int voxel_id, int face_id) {
+  int new_voxel_id = -1;
+  switch (face_id) {
+  case 0: // Front
+    new_voxel_id = voxel_id - 1;
+    if ((voxel_id % voxel_per_row_) == 0) return;
+    
+    break;
+  case 1: // Right
+    new_voxel_id = voxel_id - (voxel_per_row_ * voxel_per_row_);
+    break;
+  case 2: // Back
+    new_voxel_id = voxel_id + 1;
+    if ((new_voxel_id % voxel_per_row_) == 0) return;
+    break;
+  case 3: // Left
+    new_voxel_id = voxel_id + (voxel_per_row_ * voxel_per_row_);
+    break;
+  case 4: // Top
+    new_voxel_id = voxel_id - voxel_per_row_;
+    break;
+  case 5: // Back
+    new_voxel_id = voxel_id + voxel_per_row_;
+    break;
+  }
+
+  if (new_voxel_id >= 0 && new_voxel_id < voxel_list_.size()) {
+    voxel_list_[new_voxel_id].type_ = VoxelType::block;
+    voxel_list_[new_voxel_id].faces_[0].active_ = true;
+    voxel_list_[new_voxel_id].faces_[1].active_ = true;
+    voxel_list_[new_voxel_id].faces_[2].active_ = true;
+    voxel_list_[new_voxel_id].faces_[3].active_ = true;
+    voxel_list_[new_voxel_id].faces_[4].active_ = true;
+    voxel_list_[new_voxel_id].faces_[5].active_ = true;
+  }
 
 }
 

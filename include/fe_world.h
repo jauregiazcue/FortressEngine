@@ -38,9 +38,10 @@ public:
 	void ColourPicking(int colour_id, bool destroy);
 
 	void DestroyVoxel(int voxel_id);
+
 	void UpdateFacesWhenDestroy(int voxel_to_check);
 
-	void PlaceVoxel(int voxel_id);
+	void PlaceVoxel(int voxel_id,int face_id);
 
 	std::vector<FEMaterialComponent::Vertex> initFrontFace();
 	std::vector<FEMaterialComponent::Vertex> initRightFace();
