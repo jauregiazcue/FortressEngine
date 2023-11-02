@@ -64,11 +64,11 @@ void FEWorld::init(int voxelPerRow, bool culling) {
 
 void FEWorld::createChunks() {
   
-  for (int y = 0; y < voxel_per_row_; y++) {
-    for (int z = 0; z < voxel_per_row_; z++) {
-      for (int x = 0; x < voxel_per_row_; x++) {
+  for (int x = 0; x < voxel_per_row_; x++) {
+    for (int y = 0; y < voxel_per_row_; y++) {
+      for (int z = 0; z < voxel_per_row_; z++) {
         transform_list_.push_back(FETransformComponent{
-                              { (float)x ,(float)-y,(float)-z },
+                              { (float)x * 1.5f ,(float)-y * 1.5f,(float)-z * 1.5f},
                               { 0.0f,0.0f,0.0f },
                               { 1.0f,1.0f,1.0f } });
 
@@ -80,9 +80,9 @@ void FEWorld::createChunks() {
   int voxel_id_ = 0;
 
 
-  for (int y = 0; y < voxel_per_row_; y++) {
-    for (int z = 0; z < voxel_per_row_; z++) {
-      for (int x = 0; x < voxel_per_row_; x++) {
+  for (int x = 0; x < voxel_per_row_; x++) {
+    for (int y = 0; y < voxel_per_row_; y++) {
+      for (int z = 0; z < voxel_per_row_; z++) {
         Faces* faces = GetFaces(voxel_id_);
         voxel_list_.push_back({ voxel_id_,FEWorld::VoxelType::block,
           {faces[0],faces[1],faces[2],faces[3],faces[4],faces[5]} });
@@ -186,49 +186,51 @@ void FEWorld::Culling() {
 
 void FEWorld::CheckFaces(int voxel_to_check) {
   int deactive_faces = 0;
-  //LEFT FACE CHECKING
-  if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxel_per_row_) != 0) {
-    voxel_list_[voxel_to_check].faces_[1].active_ = false;
-    active_triangles_ -= 2;
-    deactive_faces += 1;
-  }
-
-  //RIGHT FACE CHECKING
-  if (voxel_to_check + 1 < voxel_list_.size() 
-    && ((voxel_to_check + 1) % voxel_per_row_) != 0) {
-    voxel_list_[voxel_to_check].faces_[3].active_ = false;
-    active_triangles_ -= 2;
-    deactive_faces += 1;
-  }
-
-  int voxel_to_check_2 = voxel_to_check % (voxel_per_row_ * voxel_per_row_);
   //FRONT FACE CHECKING
-  if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxel_per_row_) {
+  if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[0].active_ = false;
     active_triangles_ -= 2;
     deactive_faces += 1;
   }
 
-  int last_row = ((voxel_per_row_ * voxel_per_row_) - voxel_per_row_);
   //BACK FACE CHECKING
-  if (voxel_to_check_2 < voxel_list_.size() 
-    && voxel_to_check_2 < last_row) {
+  if (voxel_to_check + 1 < voxel_list_.size() 
+    && ((voxel_to_check + 1) % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[2].active_ = false;
     active_triangles_ -= 2;
     deactive_faces += 1;
   }
+  
+  int voxel_to_check_2 = voxel_to_check % (voxel_per_row_ * voxel_per_row_);
   //TOP FACE CHECKING
-  if (voxel_to_check >= (voxel_per_row_ * voxel_per_row_)) {
+  if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxel_per_row_) {
     voxel_list_[voxel_to_check].faces_[4].active_ = false;
     active_triangles_ -= 2;
     deactive_faces += 1;
   }
+  
+  int last_row = ((voxel_per_row_ * voxel_per_row_) - voxel_per_row_);
   //BOTTOM FACE CHECKING
-  if (voxel_to_check < ((voxel_per_row_ * voxel_per_row_ * voxel_per_row_) - (voxel_per_row_ * voxel_per_row_))) {
+  if (voxel_to_check_2 < voxel_list_.size() 
+    && voxel_to_check_2 < last_row) {
     voxel_list_[voxel_to_check].faces_[5].active_ = false;
     active_triangles_ -= 2;
     deactive_faces += 1;
   }
+  
+  //LEFT FACE CHECKING
+  if (voxel_to_check >= (voxel_per_row_ * voxel_per_row_)) {
+    voxel_list_[voxel_to_check].faces_[1].active_ = false;
+    active_triangles_ -= 2;
+    deactive_faces += 1;
+  }
+  
+  //RIGHT FACE CHECKING
+  if (voxel_to_check < ((voxel_per_row_ * voxel_per_row_ * voxel_per_row_) - (voxel_per_row_ * voxel_per_row_))) {
+    voxel_list_[voxel_to_check].faces_[3].active_ = false;
+    active_triangles_ -= 2;
+    deactive_faces += 1;
+  } 
 
   if (deactive_faces >= 6) {
     voxel_list_[voxel_to_check].type_ = VoxelType::air;
@@ -237,23 +239,25 @@ void FEWorld::CheckFaces(int voxel_to_check) {
 
 void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
-
-  //If the id is found, the voxel will be destroy or place
-  for (int i = 0; i < voxel_list_.size(); i++) {
-    for (int x = 0; x < how_many_faces_; x++) {
-      if (voxel_list_[i].type_ != VoxelType::air) {
-        if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
-          if (destroy) {
-            DestroyVoxel(i);
-            return;
-          }
-          else {
-            PlaceVoxel(i);
+  if (colour_id != -1) {
+    //If the id is found, the voxel will be destroy or place
+    for (int i = 0; i < voxel_list_.size(); i++) {
+      for (int x = 0; x < how_many_faces_; x++) {
+        if (voxel_list_[i].type_ != VoxelType::air) {
+          if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
+            if (destroy) {
+              DestroyVoxel(i);
+              return;
+            }
+            else {
+              PlaceVoxel(i);
+            }
           }
         }
       }
     }
   }
+  
 }
 
 void FEWorld::DestroyVoxel(int voxel_id) {

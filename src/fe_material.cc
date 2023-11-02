@@ -77,6 +77,7 @@ void FEMaterialComponent::enable() {
 
 void FEMaterialComponent::enableWithOtherProgram(int program_id) {
   glUseProgram(program_id);
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 void FEMaterialComponent::bindAndRender() {

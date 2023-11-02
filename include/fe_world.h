@@ -65,6 +65,8 @@ public:
 		other = 2
 	};
 
+
+
 	struct Voxel {
 		int voxel_id_;
 		VoxelType type_;

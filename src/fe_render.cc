@@ -21,15 +21,16 @@ FERender::FERender() {
 		FEShader("../src/shaders/colourPicking.vert", ShaderType::Vertex),
 			FEShader("../src/shaders/colourPicking.frag", ShaderType::Fragment) });
 
-	colour_id_ = 0;
+	colour_id_ = -1;
 	destroy_ = false;
 }
 
 void FERender::Render(FEWorld& world, FEWindow& window) {
 	glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
-	glEnable(GL_DEPTH_TEST);
+	
 	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
 		world.DrawVoxelForColourPicking(voxel,projection_,view_,
@@ -46,9 +47,9 @@ void FERender::Render(FEWorld& world, FEWindow& window) {
 		destroy_ = false;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDisable(GL_DEPTH_TEST);
+
 	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
 		world.DrawVoxel(voxel, projection_, view_);

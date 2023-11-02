@@ -13,6 +13,7 @@ public:
 
 	GLuint id_;
 	GLuint texture_id_;
+	GLuint depth_texture_id;
 };
 
 
