@@ -98,6 +98,15 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
       world_culling_ = false;
     }
 
+    ImGui::Text("Offset");
+    if (ImGui::Button("True###OffsetTrue")) {
+      world_.offset_ = 1.5f;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("False###OffsetFalse")) {
+      world_.offset_ = 1.0f;
+    }
+
     ImGui::Text("VoxelPerRow");
     if (ImGui::InputInt("##VoxelPerRow", &world_voxel_per_row_)) {
       if (world_voxel_per_row_ < 0) {

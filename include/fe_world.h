@@ -39,9 +39,10 @@ public:
 
 	void DestroyVoxel(int voxel_id);
 
-	void UpdateFacesWhenDestroy(int voxel_to_check);
+	void UpdateAdjacentFacesWhenDestroy(int voxel_to_check);
 
 	void PlaceVoxel(int voxel_id,int face_id);
+	void UpdateAdjacentFacesWhenPlace(int voxel_to_check);
 
 	std::vector<FEMaterialComponent::Vertex> initFrontFace();
 	std::vector<FEMaterialComponent::Vertex> initRightFace();
@@ -82,6 +83,8 @@ public:
 	const int how_many_faces_ = 6;
 	int active_triangles_;
 	long long ms_for_chunk_creation_;
+
+	float offset_;
 };
 
 

@@ -35,7 +35,7 @@ FEWorld::FEWorld() {
 
   active_triangles_ = 0;
 
-
+  offset_ = 1.0f;
 
   
 }
@@ -68,7 +68,7 @@ void FEWorld::createChunks() {
     for (int y = 0; y < voxel_per_row_; y++) {
       for (int z = 0; z < voxel_per_row_; z++) {
         transform_list_.push_back(FETransformComponent{
-                              { (float)x,(float)-y,(float)-z},
+                              { (float)x * offset_,(float)-y * offset_,(float)-z * offset_},
                               { 0.0f,0.0f,0.0f },
                               { 1.0f,1.0f,1.0f } });
 
@@ -245,7 +245,7 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
           if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
             if (destroy) {
               DestroyVoxel(i);
-              UpdateFacesWhenDestroy(i);
+              UpdateAdjacentFacesWhenDestroy(i);
               return;
             }
             else {
@@ -293,7 +293,7 @@ void FEWorld::DestroyVoxel(int voxel_id) {
   
 }
 
-void FEWorld::UpdateFacesWhenDestroy(int voxel_to_check) {
+void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
   //FRONT FACE OF THE BACK VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
   int new_voxel_to_check = voxel_to_check + 1;
   if (new_voxel_to_check < voxel_list_.size()) {
@@ -328,7 +328,7 @@ void FEWorld::UpdateFacesWhenDestroy(int voxel_to_check) {
       active_triangles_ += 2;
     }
   }
-  
+  //LEFT FACE OF THE RIGHT VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
   new_voxel_to_check = voxel_to_check + (voxel_per_row_ * voxel_per_row_);
   if (new_voxel_to_check < voxel_list_.size()) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
@@ -336,7 +336,7 @@ void FEWorld::UpdateFacesWhenDestroy(int voxel_to_check) {
       active_triangles_ += 2;
     }
   }
-
+  //RIGHT FACE OF THE LEFT VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
   new_voxel_to_check = voxel_to_check - (voxel_per_row_ * voxel_per_row_);
   if (new_voxel_to_check >= 0) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
@@ -380,8 +380,69 @@ void FEWorld::PlaceVoxel(int voxel_id, int face_id) {
     voxel_list_[new_voxel_id].faces_[3].active_ = true;
     voxel_list_[new_voxel_id].faces_[4].active_ = true;
     voxel_list_[new_voxel_id].faces_[5].active_ = true;
+    active_triangles_ += 6;
+    UpdateAdjacentFacesWhenPlace(new_voxel_id);
   }
 
+}
+
+void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
+  //FRONT FACE OF THE BACK VOXEL OF THE VOXEL THAT IS BEING PLACED
+  int new_voxel_to_check = voxel_to_check + 1;
+  if (new_voxel_to_check < voxel_list_.size()) {
+    if (new_voxel_to_check % voxel_per_row_ != 0
+      && voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[0].active_ = false;
+      voxel_list_[voxel_to_check].faces_[2].active_ = false;
+      active_triangles_ -= 4;
+    }
+  }
+  //BACK FACE OF THE FRONT VOXEL OF THE VOXEL THAT IS BEING PLACED
+  new_voxel_to_check = voxel_to_check - 1;
+  if (new_voxel_to_check >= 0) {
+    if ((voxel_to_check % voxel_per_row_) != 0 &&
+      voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[2].active_ = false;
+      voxel_list_[voxel_to_check].faces_[0].active_ = false;
+      active_triangles_ -= 4;
+    }
+  }
+  //TOP FACE OF THE BOTTOM VOXEL OF THE VOXEL THAT IS BEING PLACED
+  new_voxel_to_check = voxel_to_check + voxel_per_row_;
+  if (new_voxel_to_check < voxel_list_.size()) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[4].active_ = false;
+      voxel_list_[voxel_to_check].faces_[5].active_ = false;
+      active_triangles_ -= 4;
+    }
+  }
+  //BOTTOM FACE OF THE TOP VOXEL OF THE VOXEL THAT IS BEING PLACED
+  new_voxel_to_check = voxel_to_check - voxel_per_row_;
+  if (new_voxel_to_check >= 0) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[5].active_ = false;
+      voxel_list_[voxel_to_check].faces_[4].active_ = false;
+      active_triangles_ -= 4;
+    }
+  }
+  //LEFT FACE OF THE RIGHT VOXEL OF THE VOXEL THAT IS BEING PLACED
+  new_voxel_to_check = voxel_to_check + (voxel_per_row_ * voxel_per_row_);
+  if (new_voxel_to_check < voxel_list_.size()) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[1].active_ = false;
+      voxel_list_[voxel_to_check].faces_[3].active_ = false;
+      active_triangles_ -= 4;
+    }
+  }
+  //RIGHT FACE OF THE LEFT VOXEL OF THE VOXEL THAT IS BEING PLACED
+  new_voxel_to_check = voxel_to_check - (voxel_per_row_ * voxel_per_row_);
+  if (new_voxel_to_check >= 0) {
+    if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
+      voxel_list_[new_voxel_to_check].faces_[3].active_ = false;
+      voxel_list_[voxel_to_check].faces_[1].active_ = false;
+      active_triangles_ -= 4;
+    }
+  }
 }
 
 
