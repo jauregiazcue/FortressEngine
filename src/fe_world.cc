@@ -246,6 +246,7 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
             if (destroy) {
               DestroyVoxel(i);
               UpdateAdjacentFacesWhenDestroy(i);
+              printf("%d\n", i);
               return;
             }
             else {
@@ -305,7 +306,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
   }
   //BACK FACE OF THE FRONT VOXEL OF THE VOXEL THAT IS BEING ELIMINATED
   new_voxel_to_check = voxel_to_check - 1;
-  if (new_voxel_to_check >= 0) {
+  if (new_voxel_to_check >= 0 ) {
     if ((voxel_to_check % voxel_per_row_) != 0 &&
       voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[2].active_ = true;
@@ -365,9 +366,11 @@ void FEWorld::PlaceVoxel(int voxel_id, int face_id) {
     new_voxel_id = voxel_id + (voxel_per_row_ * voxel_per_row_);
     break;
   case 4: // Top
+    if (voxel_id % 16 < 4) return;
     new_voxel_id = voxel_id - voxel_per_row_;
     break;
   case 5: // Back
+    if ((voxel_id + 4) % 16 < 4) return;
     new_voxel_id = voxel_id + voxel_per_row_;
     break;
   }
@@ -409,7 +412,7 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
   }
   //TOP FACE OF THE BOTTOM VOXEL OF THE VOXEL THAT IS BEING PLACED
   new_voxel_to_check = voxel_to_check + voxel_per_row_;
-  if (new_voxel_to_check < voxel_list_.size()) {
+  if (new_voxel_to_check < voxel_list_.size() && (new_voxel_to_check + 4) % 16 < 4) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[4].active_ = false;
       voxel_list_[voxel_to_check].faces_[5].active_ = false;
@@ -418,7 +421,7 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
   }
   //BOTTOM FACE OF THE TOP VOXEL OF THE VOXEL THAT IS BEING PLACED
   new_voxel_to_check = voxel_to_check - voxel_per_row_;
-  if (new_voxel_to_check >= 0) {
+  if (new_voxel_to_check >= 0 && (new_voxel_to_check % 16 < 4)) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[5].active_ = false;
       voxel_list_[voxel_to_check].faces_[4].active_ = false;

@@ -35,6 +35,8 @@ public:
 		glm::mat4 projection_;
 		glm::mat4 view_;
 
+		glm::mat4 colour_picking_projection_;
+
 		FETransformComponent camera_transform_;
 		std::shared_ptr<FEProgram> colour_picking_program_;
 		
