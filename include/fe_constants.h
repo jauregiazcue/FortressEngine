@@ -5,7 +5,7 @@
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 700;
 	const glm::vec4 kClearColor{1.0f,1.0f,1.0f,1.0f};
-	const char kWindowName[] = "PalaceEngine";
+	const char kWindowName[] = "FortressEngine";
 
 	const float kRenderPerspectiveNear = 0.1f;
 	const float kRenderPerspectiveFar  = 200.0f;

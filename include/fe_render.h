@@ -27,6 +27,7 @@ public:
 
 	int colour_id_;
 	bool destroy_;
+	bool colour_picking_;
 	private :
 
 		void MoveCamera(glm::vec2 directions, glm::vec2 speed);

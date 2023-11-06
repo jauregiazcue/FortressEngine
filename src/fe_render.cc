@@ -23,30 +23,34 @@ FERender::FERender() {
 
 	colour_id_ = -1;
 	destroy_ = false;
+	colour_picking_ = true;
 }
 
 void FERender::Render(FEWorld& world, FEWindow& window) {
 	colour_id_ = -1;
-	glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
+	if (colour_picking_) {
+		glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
+
+		glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
+			world.DrawVoxelForColourPicking(voxel, projection_, view_,
+				colour_picking_program_.get()->getId());
+		}
+
+		if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_LEFT)) {
+			ColourPicking(window);
+			destroy_ = true;
+		}
+
+		if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_RIGHT)) {
+			ColourPicking(window);
+			destroy_ = false;
+		}
+	}
 	
-	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
-		world.DrawVoxelForColourPicking(voxel,projection_,view_,
-			colour_picking_program_.get()->getId());
-	}
-
-	if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_LEFT)) {
-		ColourPicking(window);
-		destroy_ = true;
-	}
-
-	if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_RIGHT)) {
-		ColourPicking(window);
-		destroy_ = false;
-	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);

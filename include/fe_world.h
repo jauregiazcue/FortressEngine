@@ -16,7 +16,7 @@ public:
 
 	~FEWorld();
 
-	void init(int voxelPerRow,bool culling);
+	void init(int voxelPerRow);
 
 	void createChunks();
 
@@ -85,6 +85,7 @@ public:
 	long long ms_for_chunk_creation_;
 
 	float offset_;
+	bool culling_;
 };
 
 

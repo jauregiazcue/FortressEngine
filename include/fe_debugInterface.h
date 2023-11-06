@@ -5,7 +5,7 @@
 
 
 #include <fe_world.h>
-
+#include <fe_render.h>
 class FEScene {
 public:
 	
@@ -14,9 +14,9 @@ public:
 
 	~FEScene();
 
-	void Update(GLfloat deltaTime,int colour_id,bool destroy,int texture_id);
+	void Update(GLfloat deltaTime,FERender& render);
 
-	void Interface(GLfloat deltaTime, int texture_id);
+	void Interface(GLfloat deltaTime, FERender& render);
 
 	int active_voxel_;
 	int active_face_;
@@ -29,7 +29,6 @@ public:
 	const float window_size_y = 450.0f;
 
 	bool world_made_;
-	bool world_culling_;
 
 	int world_voxel_per_row_;
 

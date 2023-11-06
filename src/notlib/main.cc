@@ -33,8 +33,7 @@ int main(void) {
 
     renderer.DebugCameraMovement();
     renderer.Render(scene.world_,fe_window);
-    scene.Update(deltaTime,renderer.colour_id_,renderer.destroy_,
-      renderer.color_picking_buffer_.texture_id_);
+    scene.Update(deltaTime,renderer);
 
     fe_window.swap();
   }

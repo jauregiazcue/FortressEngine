@@ -12,7 +12,6 @@ FEScene::FEScene() {
   wireframe_ = false;
   fps_ = 0;
   world_made_ = false;
-  world_culling_ = true;
   world_voxel_per_row_ = 1;
   
 }
@@ -21,13 +20,14 @@ FEScene::~FEScene() {
 
 }
 
-void FEScene::Update(GLfloat deltaTime, int colour_id, bool destroy,int texture_id) {
-  world_.ColourPicking(colour_id, destroy);
-  Interface(deltaTime, texture_id);
+void FEScene::Update(GLfloat deltaTime, FERender& render) {
+  
+  world_.ColourPicking(render.colour_id_, render.destroy_);
+  Interface(deltaTime, render);
 }
 
 
-void FEScene::Interface(GLfloat deltaTime, int texture_id) {
+void FEScene::Interface(GLfloat deltaTime, FERender& render) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
 
@@ -43,7 +43,7 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
   if (world_made_) {
 
     ImVec2 wsize = { 200,200 };
-    ImGui::Image((ImTextureID)texture_id,
+    ImGui::Image((ImTextureID)render.color_picking_buffer_.texture_id_,
       wsize, { 0,1 }, { 1,0 });
 
     fps_ = 1.0f / deltaTime;
@@ -91,11 +91,11 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
   else {
     ImGui::Text("Culling");
     if (ImGui::Button("True")) {
-      world_culling_ = true;
+      world_.culling_ = true;
     }
     ImGui::SameLine();
     if (ImGui::Button("False")) {
-      world_culling_ = false;
+      world_.culling_ = false;
     }
 
     ImGui::Text("Offset");
@@ -105,6 +105,15 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
     ImGui::SameLine();
     if (ImGui::Button("False###OffsetFalse")) {
       world_.offset_ = 1.0f;
+    }
+
+    ImGui::Text("Colour Picking");
+    if (ImGui::Button("True###ColourTrue")) {
+      render.colour_picking_ = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("False###ColourFalse")) {
+      render.colour_picking_ = false;
     }
 
     ImGui::Text("VoxelPerRow");
@@ -119,7 +128,7 @@ void FEScene::Interface(GLfloat deltaTime, int texture_id) {
     }
 
     if (ImGui::Button("Create World")) {
-      world_.init(world_voxel_per_row_, world_culling_);
+      world_.init(world_voxel_per_row_);
       world_made_ = true;
     }
   }

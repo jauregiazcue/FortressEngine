@@ -37,14 +37,14 @@ FEWorld::FEWorld() {
 
   offset_ = 1.0f;
 
-  
+  culling_ = true;
 }
 
 FEWorld::~FEWorld() {
 
 }
 
-void FEWorld::init(int voxelPerRow, bool culling) {
+void FEWorld::init(int voxelPerRow) {
   voxel_per_row_ = voxelPerRow;
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -56,7 +56,7 @@ void FEWorld::init(int voxelPerRow, bool culling) {
   ms_for_chunk_creation_ =
     std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-  if (culling) {
+  if (culling_) {
     Culling();
   }
 
@@ -245,12 +245,12 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
           if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
             if (destroy) {
               DestroyVoxel(i);
-              UpdateAdjacentFacesWhenDestroy(i);
-              printf("%d\n", i);
+              if (culling_) UpdateAdjacentFacesWhenDestroy(i);
               return;
             }
             else {
               PlaceVoxel(i,x);
+              return;
             }
           }
         }
@@ -366,11 +366,11 @@ void FEWorld::PlaceVoxel(int voxel_id, int face_id) {
     new_voxel_id = voxel_id + (voxel_per_row_ * voxel_per_row_);
     break;
   case 4: // Top
-    if (voxel_id % 16 < 4) return;
+    if (voxel_id % (voxel_per_row_ * voxel_per_row_) < voxel_per_row_) return;
     new_voxel_id = voxel_id - voxel_per_row_;
     break;
   case 5: // Back
-    if ((voxel_id + 4) % 16 < 4) return;
+    if ((voxel_id + voxel_per_row_) % (voxel_per_row_ * voxel_per_row_) < voxel_per_row_) return;
     new_voxel_id = voxel_id + voxel_per_row_;
     break;
   }
@@ -384,7 +384,7 @@ void FEWorld::PlaceVoxel(int voxel_id, int face_id) {
     voxel_list_[new_voxel_id].faces_[4].active_ = true;
     voxel_list_[new_voxel_id].faces_[5].active_ = true;
     active_triangles_ += 6;
-    UpdateAdjacentFacesWhenPlace(new_voxel_id);
+    if(culling_) UpdateAdjacentFacesWhenPlace(new_voxel_id);
   }
 
 }
@@ -412,7 +412,7 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
   }
   //TOP FACE OF THE BOTTOM VOXEL OF THE VOXEL THAT IS BEING PLACED
   new_voxel_to_check = voxel_to_check + voxel_per_row_;
-  if (new_voxel_to_check < voxel_list_.size() && (new_voxel_to_check + 4) % 16 < 4) {
+  if (new_voxel_to_check < voxel_list_.size() && new_voxel_to_check % (voxel_per_row_ * voxel_per_row_) >= voxel_per_row_) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[4].active_ = false;
       voxel_list_[voxel_to_check].faces_[5].active_ = false;
@@ -421,7 +421,8 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
   }
   //BOTTOM FACE OF THE TOP VOXEL OF THE VOXEL THAT IS BEING PLACED
   new_voxel_to_check = voxel_to_check - voxel_per_row_;
-  if (new_voxel_to_check >= 0 && (new_voxel_to_check % 16 < 4)) {
+  if (new_voxel_to_check >= 0 
+    && new_voxel_to_check % (voxel_per_row_ * voxel_per_row_) < ((voxel_per_row_ * voxel_per_row_) - voxel_per_row_)) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[5].active_ = false;
       voxel_list_[voxel_to_check].faces_[4].active_ = false;
