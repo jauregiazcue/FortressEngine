@@ -73,26 +73,26 @@ public:
 		front = 0,
 	};
 
+	#define FRONTFACE 0
+	#define LEFTFACES 1
+	#define BACKFACES 2
+	#define RIGHTFACES 3
+	#define TOPFACES 4
+	#define BOTTOMFACES 5
+	#define FACES 6
 	
 	struct Voxel {
 		int voxel_id_;
 		VoxelType type_;
-		Faces faces_[6];
+		Faces faces_[FACES];
 	};
 
 	std::vector<Voxel> voxel_list_;
 
 	int voxel_per_row_;
 	int voxel_per_row_and_colum_;
-#define FRONTFACE 0
-#define LEFTFACES 1
-#define BACKFACES 2
-#define RIGHTFACES 3
-#define TOPFACES 4
-#define BOTTOMFACES 5
-	#define FACES 6
+
 	int checking = 1;
-	const int how_many_faces_ = 6;
 	int active_faces_;
 	long long ms_for_chunk_creation_;
 
