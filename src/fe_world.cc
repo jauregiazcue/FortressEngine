@@ -38,6 +38,7 @@ FEWorld::FEWorld() {
   offset_ = 1.0f;
 
   culling_ = true;
+  greedy_meshing_ = true;
 }
 
 FEWorld::~FEWorld() {
@@ -61,6 +62,10 @@ void FEWorld::init(int voxelPerRow) {
     Culling();
   }
 
+  if( greedy_meshing_ ) {
+    GreedyMeshing();
+  }
+  
 }
 
 void FEWorld::createChunks() {
@@ -84,7 +89,8 @@ void FEWorld::createChunks() {
   for (int x = 0; x < voxel_per_row_; x++) {
     for (int y = 0; y < voxel_per_row_; y++) {
       for (int z = 0; z < voxel_per_row_; z++) {
-        Faces* faces = GetFaces(voxel_id_);
+        glm::vec3 position{( float )x* offset_, ( float )-y * offset_, ( float )-z * offset_};
+        Faces* faces = GetFaces(voxel_id_, position );
         voxel_list_.push_back({ voxel_id_,FEWorld::VoxelType::block,
           {faces[FRONTFACE],faces[LEFTFACES],faces[BACKFACES],
            faces[RIGHTFACES],faces[TOPFACES],faces[BOTTOMFACES]} });
@@ -98,19 +104,20 @@ void FEWorld::createChunks() {
   
 }
 
-FEWorld::Faces* FEWorld::GetFaces(int voxel_id) {
+FEWorld::Faces* FEWorld::GetFaces(int voxel_id, glm::vec3 position ) {
   Faces faces_[FACES];
 
   for (int i = 0; i < FACES; i++) {
     faces_[i].material_id_ = i;
     faces_[i].active_ = true;
+    faces_[i].colour_picking_active_ = true;
 
     int color_id_helper = (voxel_id * FACES) + i;
     faces_[i].real_color_id_ = color_id_helper;
     faces_[i].color_id_ =    { ((color_id_helper & 0x000000FF) >> 0)  / 255.0f ,
                                ((color_id_helper & 0x0000FF00) >> 8)  / 255.0f ,
                                ((color_id_helper & 0x00FF0000) >> 16) / 255.0f };
-
+    faces_[i].transform_.setPosition( position );
 
   }
 
@@ -131,16 +138,17 @@ void FEWorld::DrawVoxel(int voxel_id_, glm::mat4 projection, glm::mat4 view) {
 
 
 void FEWorld::DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::mat4 view) {
-  if (voxel_list_[voxel_id_].faces_[face_id_].active_) {
+  Faces& drawing_face = voxel_list_[voxel_id_].faces_[face_id_];
+  if ( drawing_face.active_) {
     FEMaterialComponent& material = 
-      material_list_[voxel_list_[voxel_id_].faces_[face_id_].material_id_];
+      material_list_[drawing_face.material_id_];
 
     material.enable();
 
     material.setUpReferenceUniform("PickingColour",
-      voxel_list_[voxel_id_].faces_[face_id_].color_id_);
+      drawing_face.color_id_);
 
-    material.setUpModel(transform_list_[voxel_id_].getTransform());
+    material.setUpModel( drawing_face.transform_.getTransform());
 
     material.setUpCamera(projection, view);
 
@@ -161,16 +169,18 @@ void FEWorld::DrawVoxelForColourPicking(int voxel_id_, glm::mat4 projection, glm
 }
 
 void FEWorld::DrawFaceForColourPicking(int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
-  if (voxel_list_[voxel_id_].faces_[face_id_].active_) {
+  Faces& drawing_face = voxel_list_[voxel_id_].faces_[face_id_];
+  if ( drawing_face.colour_picking_active_ ) {
     FEMaterialComponent& material =
-      material_list_[voxel_list_[voxel_id_].faces_[face_id_].material_id_];
+      material_list_[drawing_face.material_id_];
 
     material.enableWithOtherProgram(program_id);
 
     material.setUpReferenceUniformWithOtherProgram("PickingColour",
-      voxel_list_[voxel_id_].faces_[face_id_].color_id_, program_id);
+      drawing_face.color_id_, program_id);
 
-    material.setUpModelWithOtherProgram(transform_list_[voxel_id_].getTransform(), program_id);
+    material.setUpModelWithOtherProgram(
+      transform_list_[voxel_id_].getTransform(), program_id);
 
     material.setUpCameraWithOtherProgram(projection, view, program_id);
 
@@ -185,10 +195,28 @@ void FEWorld::Culling() {
   }
 }
 
+void FEWorld::GreedyMeshing() {
+  glm::vec3 last_position_;
+  glm::vec3 first_position_ = transform_list_[voxel_list_[0].voxel_id_].getPosition();
+  for( int i = 1; i < voxel_per_row_and_colum_; i++ ) {
+    voxel_list_[i].faces_[LEFTFACES].active_ = false;
+    last_position_ = transform_list_[voxel_list_[i].voxel_id_].getPosition();
+  }
+  glm::vec3 center_of_face{
+    (first_position_.x + last_position_.x) / 2,
+    (first_position_.y + last_position_.y) / 2,
+    (first_position_.z + last_position_.z) / 2, };
+
+  voxel_list_[0].faces_[LEFTFACES].transform_.setPosition( center_of_face );
+  voxel_list_[0].faces_[LEFTFACES].transform_.setScale({1.0f,10.0f,10.0f});
+  
+}
+
 void FEWorld::CheckFaces(int voxel_to_check) {
 
   if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[FRONTFACE].active_ = false;
+    voxel_list_[voxel_to_check].faces_[FRONTFACE].colour_picking_active_ = false;
     active_faces_ -= 1;
 
   }
@@ -196,6 +224,7 @@ void FEWorld::CheckFaces(int voxel_to_check) {
   if (voxel_to_check + 1 < voxel_list_.size() 
     && ((voxel_to_check + 1) % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[BACKFACES].active_ = false;
+    voxel_list_[voxel_to_check].faces_[BACKFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
 
   }
@@ -203,6 +232,7 @@ void FEWorld::CheckFaces(int voxel_to_check) {
   int voxel_to_check_2 = voxel_to_check % (voxel_per_row_and_colum_);
   if (voxel_to_check_2  >= 0  && voxel_to_check_2 >= voxel_per_row_) {
     voxel_list_[voxel_to_check].faces_[TOPFACES].active_ = false;
+    voxel_list_[voxel_to_check].faces_[TOPFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
 
   }
@@ -211,18 +241,21 @@ void FEWorld::CheckFaces(int voxel_to_check) {
   if (voxel_to_check_2 < voxel_list_.size() 
     && voxel_to_check_2 < last_row) {
     voxel_list_[voxel_to_check].faces_[BOTTOMFACES].active_ = false;
+    voxel_list_[voxel_to_check].faces_[BOTTOMFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
 
   }
 
   if (voxel_to_check >= (voxel_per_row_and_colum_)) {
     voxel_list_[voxel_to_check].faces_[LEFTFACES].active_ = false;
+    voxel_list_[voxel_to_check].faces_[LEFTFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
 
   }
 
   if (voxel_to_check < ((voxel_per_row_and_colum_ * voxel_per_row_) - (voxel_per_row_and_colum_))) {
     voxel_list_[voxel_to_check].faces_[RIGHTFACES].active_ = false;
+    voxel_list_[voxel_to_check].faces_[RIGHTFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
 
   } 
@@ -259,31 +292,37 @@ void FEWorld::DestroyVoxel(int voxel_id) {
   voxel_list_[voxel_id].type_ = VoxelType::air;
   if (voxel_list_[voxel_id].faces_[FRONTFACE].active_) {
     voxel_list_[voxel_id].faces_[FRONTFACE].active_ = false;
+    voxel_list_[voxel_id].faces_[FRONTFACE].colour_picking_active_ = false;
     active_faces_ -= 1;
   }
 
   if (voxel_list_[voxel_id].faces_[LEFTFACES].active_) {
     voxel_list_[voxel_id].faces_[LEFTFACES].active_ = false;
+    voxel_list_[voxel_id].faces_[LEFTFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
   }
 
   if (voxel_list_[voxel_id].faces_[BACKFACES].active_) {
     voxel_list_[voxel_id].faces_[BACKFACES].active_ = false;
+    voxel_list_[voxel_id].faces_[BACKFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
   }
 
   if (voxel_list_[voxel_id].faces_[RIGHTFACES].active_) {
     voxel_list_[voxel_id].faces_[RIGHTFACES].active_ = false;
+    voxel_list_[voxel_id].faces_[RIGHTFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
   }
 
   if (voxel_list_[voxel_id].faces_[TOPFACES].active_) {
     voxel_list_[voxel_id].faces_[TOPFACES].active_ = false;
+    voxel_list_[voxel_id].faces_[TOPFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
   }
   
   if (voxel_list_[voxel_id].faces_[BOTTOMFACES].active_) {
     voxel_list_[voxel_id].faces_[BOTTOMFACES].active_ = false;
+    voxel_list_[voxel_id].faces_[BOTTOMFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
   }
   
@@ -296,6 +335,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
     if (new_voxel_to_check % voxel_per_row_ != 0
       && voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[FRONTFACE].active_ = true;
+      voxel_list_[new_voxel_to_check].faces_[FRONTFACE].colour_picking_active_ = true;
       active_faces_ += 1;
     }
   }
@@ -305,6 +345,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
     if ((voxel_to_check % voxel_per_row_) != 0 &&
       voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[BACKFACES].active_ = true;
+      voxel_list_[new_voxel_to_check].faces_[BACKFACES].colour_picking_active_ = true;
       active_faces_ += 1;
     }
   }
@@ -313,6 +354,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
   if (new_voxel_to_check < voxel_list_.size()) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[TOPFACES].active_ = true;
+      voxel_list_[new_voxel_to_check].faces_[TOPFACES].colour_picking_active_ = true;
       active_faces_ += 1;
     }
   }
@@ -321,6 +363,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
   if (new_voxel_to_check >= 0) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[BOTTOMFACES].active_ = true;
+      voxel_list_[new_voxel_to_check].faces_[BOTTOMFACES].colour_picking_active_ = true;
       active_faces_ += 1;
     }
   }
@@ -329,6 +372,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
   if (new_voxel_to_check < voxel_list_.size()) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[LEFTFACES].active_ = true;
+      voxel_list_[new_voxel_to_check].faces_[LEFTFACES].colour_picking_active_ = true;
       active_faces_ += 1;
     }
   }
@@ -337,6 +381,7 @@ void FEWorld::UpdateAdjacentFacesWhenDestroy(int voxel_to_check) {
   if (new_voxel_to_check >= 0) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[RIGHTFACES].active_ = true;
+      voxel_list_[new_voxel_to_check].faces_[RIGHTFACES].colour_picking_active_ = true;
       active_faces_ += 1;
     }
   }
@@ -378,6 +423,13 @@ void FEWorld::PlaceVoxel(int voxel_id, int face_id) {
     voxel_list_[new_voxel_id].faces_[RIGHTFACES].active_ = true;
     voxel_list_[new_voxel_id].faces_[TOPFACES].active_ = true;
     voxel_list_[new_voxel_id].faces_[BOTTOMFACES].active_ = true;
+
+    voxel_list_[new_voxel_id].faces_[FRONTFACE].colour_picking_active_ = true;
+    voxel_list_[new_voxel_id].faces_[LEFTFACES].colour_picking_active_ = true;
+    voxel_list_[new_voxel_id].faces_[BACKFACES].colour_picking_active_ = true;
+    voxel_list_[new_voxel_id].faces_[RIGHTFACES].colour_picking_active_ = true;
+    voxel_list_[new_voxel_id].faces_[TOPFACES].colour_picking_active_ = true;
+    voxel_list_[new_voxel_id].faces_[BOTTOMFACES].colour_picking_active_ = true;
     active_faces_ += FACES;
     if(culling_) UpdateAdjacentFacesWhenPlace(new_voxel_id);
   }
@@ -392,6 +444,9 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
       && voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[FRONTFACE].active_ = false;
       voxel_list_[voxel_to_check].faces_[BACKFACES].active_ = false;
+
+      voxel_list_[new_voxel_to_check].faces_[FRONTFACE].colour_picking_active_ = false;
+      voxel_list_[voxel_to_check].faces_[BACKFACES].colour_picking_active_ = false;
       active_faces_ -= 2;
     }
   }
@@ -402,6 +457,9 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
       voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[BACKFACES].active_ = false;
       voxel_list_[voxel_to_check].faces_[FRONTFACE].active_ = false;
+
+      voxel_list_[new_voxel_to_check].faces_[BACKFACES].colour_picking_active_ = false;
+      voxel_list_[voxel_to_check].faces_[FRONTFACE].colour_picking_active_ = false;
       active_faces_ -= 2;
     }
   }
@@ -411,6 +469,9 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[TOPFACES].active_ = false;
       voxel_list_[voxel_to_check].faces_[BOTTOMFACES].active_ = false;
+
+      voxel_list_[new_voxel_to_check].faces_[TOPFACES].colour_picking_active_ = false;
+      voxel_list_[voxel_to_check].faces_[BOTTOMFACES].colour_picking_active_ = false;
       active_faces_ -= 2;
     }
   }
@@ -421,6 +482,9 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[BOTTOMFACES].active_ = false;
       voxel_list_[voxel_to_check].faces_[TOPFACES].active_ = false;
+
+      voxel_list_[new_voxel_to_check].faces_[BOTTOMFACES].colour_picking_active_ = false;
+      voxel_list_[voxel_to_check].faces_[TOPFACES].colour_picking_active_ = false;
       active_faces_ -= 2;
     }
   }
@@ -430,6 +494,9 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[LEFTFACES].active_ = false;
       voxel_list_[voxel_to_check].faces_[RIGHTFACES].active_ = false;
+
+      voxel_list_[new_voxel_to_check].faces_[LEFTFACES].colour_picking_active_ = false;
+      voxel_list_[voxel_to_check].faces_[RIGHTFACES].colour_picking_active_ = false;
       active_faces_ -= 2;
     }
   }
@@ -439,6 +506,9 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
     if (voxel_list_[new_voxel_to_check].type_ != VoxelType::air) {
       voxel_list_[new_voxel_to_check].faces_[RIGHTFACES].active_ = false;
       voxel_list_[voxel_to_check].faces_[LEFTFACES].active_ = false;
+
+      voxel_list_[new_voxel_to_check].faces_[RIGHTFACES].colour_picking_active_ = false;
+      voxel_list_[voxel_to_check].faces_[LEFTFACES].colour_picking_active_ = false;
       active_faces_ -= 2;
     }
   }

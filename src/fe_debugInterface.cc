@@ -98,6 +98,15 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
       world_.culling_ = false;
     }
 
+    ImGui::Text( "Greedy Meshing" );
+    if( ImGui::Button( "True###GreedyTrue" ) ) {
+      world_.greedy_meshing_ = true;
+    }
+    ImGui::SameLine();
+    if( ImGui::Button( "False###GreedyFalse" ) ) {
+      world_.greedy_meshing_ = false;
+    }
+
     ImGui::Text("Offset");
     if (ImGui::Button("True###OffsetTrue")) {
       world_.offset_ = 1.5f;

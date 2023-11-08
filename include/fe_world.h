@@ -31,6 +31,7 @@ public:
 		int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id);
 
 	void Culling();
+	void GreedyMeshing();
 
 	void CheckFaces(int voxel_to_check);
 	
@@ -57,11 +58,13 @@ public:
 	struct Faces {
 		int material_id_;
 		bool active_;
+		bool colour_picking_active_;
 		glm::vec3 color_id_;
 		int real_color_id_;
+		FETransformComponent transform_;
 	};
 
-	Faces* GetFaces(int voxel_id);
+	Faces* GetFaces(int voxel_id,glm::vec3 position);
 
 	enum class VoxelType {
 		block = 0,
@@ -96,6 +99,7 @@ public:
 
 	float offset_;
 	bool culling_;
+	bool greedy_meshing_;
 };
 
 
