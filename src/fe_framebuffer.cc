@@ -35,3 +35,23 @@ FEFramebuffer::FEFramebuffer() {
 
 FEFramebuffer::~FEFramebuffer() {
 }
+
+bool FEFramebuffer::isResizeNeeded( float newWidth, float newHeight ) {
+  if( newWidth == texture_width_ ) return false;
+  if( newHeight == texture_height_ ) return false;
+  return true;
+}
+
+void FEFramebuffer::resizeTextures( float newWidth, float newHeight ) {
+  
+
+  glBindTexture( GL_TEXTURE_2D, depth_texture_id );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 
+    newWidth, newHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL );
+  glBindTexture( GL_TEXTURE_2D, 0 );
+
+  glBindTexture( GL_TEXTURE_2D, texture_id_ );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, 
+    newWidth, newHeight, 0, GL_RGBA, GL_FLOAT, NULL );
+  glBindTexture( GL_TEXTURE_2D, 0 );
+}

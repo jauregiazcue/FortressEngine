@@ -28,6 +28,7 @@ FERender::FERender() {
 
 void FERender::Render(FEWorld& world, FEWindow& window) {
 	colour_id_ = -1;
+	
 	if (colour_picking_) {
 		glBindFramebuffer(GL_FRAMEBUFFER, color_picking_buffer_.id_);
 
@@ -166,8 +167,11 @@ void FERender::ColourPicking(FEWindow& window) {
 
 	//Get the height of the window
 	int height = 0;
-	glfwGetWindowSize(window.window_.get(), nullptr, &height);
-
+	int width = 0;
+	glfwGetWindowSize(window.window_.get(), &width, &height);
+	if( color_picking_buffer_.isResizeNeeded( width , height ) ) {
+		color_picking_buffer_.resizeTextures( width, height );
+	}
 	//Get the pixel color 
 	unsigned char data[4];
 	glReadPixels(xpos, height - 1 - ypos, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
