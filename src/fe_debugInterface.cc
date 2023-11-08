@@ -48,8 +48,8 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
 
     fps_ = 1.0f / deltaTime;
     ImGui::Text("FPS : %03.00f", fps_);
-    ImGui::Text("Active Triangles : %d", world_.active_triangles_);
-    ImGui::Text("Active Faces : %d", world_.active_triangles_ / 2);
+    ImGui::Text("Active Triangles : %d", world_.active_faces_ * 2);
+    ImGui::Text("Active Faces : %d", world_.active_faces_ );
     ImGui::Text("World Generation : %d ms",
       world_.ms_for_chunk_creation_);
 
@@ -84,7 +84,7 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
     if (ImGui::Button("Destroy World")) {
       world_.voxel_list_.clear();
       world_.transform_list_.clear();
-      world_.active_triangles_ = 0;
+      world_.active_faces_ = 0;
       world_made_ = false;
     }
   }
