@@ -69,9 +69,7 @@ public:
 		innactive = 2
 	};
 
-	enum class FaceType {
-		front = 0,
-	};
+
 
 	#define FRONTFACE 0
 	#define LEFTFACES 1
