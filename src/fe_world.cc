@@ -34,7 +34,8 @@ FEWorld::FEWorld() {
   material_list_.push_back({ FEMaterialComponent{ pro,vertices,index } });
 
   active_faces_ = 0;
-
+  ms_for_chunk_creation_ = 0.0f;
+  voxel_per_row_ = 0;
   offset_ = 1.0f;
 
   culling_ = true;
@@ -196,19 +197,23 @@ void FEWorld::Culling() {
 }
 
 void FEWorld::GreedyMeshing() {
-  glm::vec3 last_position_;
-  glm::vec3 first_position_ = transform_list_[voxel_list_[0].voxel_id_].getPosition();
-  for( int i = 1; i < voxel_per_row_and_colum_; i++ ) {
-    voxel_list_[i].faces_[LEFTFACES].active_ = false;
-    last_position_ = transform_list_[voxel_list_[i].voxel_id_].getPosition();
-  }
-  glm::vec3 center_of_face{
-    (first_position_.x + last_position_.x) / 2,
-    (first_position_.y + last_position_.y) / 2,
-    (first_position_.z + last_position_.z) / 2, };
+  if (voxel_list_.size() > 1) {
+    glm::vec3 last_position_;
+    glm::vec3 first_position_ = transform_list_[voxel_list_[0].voxel_id_].getPosition();
+    for (int i = 1; i < voxel_per_row_and_colum_; i++) {
+      voxel_list_[i].faces_[LEFTFACES].active_ = false;
+      last_position_ = transform_list_[voxel_list_[i].voxel_id_].getPosition();
+    }
+    glm::vec3 center_of_face{
+      (first_position_.x + last_position_.x) / 2,
+      (first_position_.y + last_position_.y) / 2,
+      (first_position_.z + last_position_.z) / 2, };
 
-  voxel_list_[0].faces_[LEFTFACES].transform_.setPosition( center_of_face );
-  voxel_list_[0].faces_[LEFTFACES].transform_.setScale({1.0f,10.0f,10.0f});
+    voxel_list_[0].faces_[LEFTFACES].transform_.setPosition(center_of_face);
+    float new_scale = (float)voxel_per_row_;
+    voxel_list_[0].faces_[LEFTFACES].transform_.setScale({ 1.0f,new_scale,new_scale });
+
+  }
   
 }
 

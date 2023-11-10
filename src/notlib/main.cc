@@ -8,6 +8,9 @@
 
 
 
+
+
+
 int main(void) {
 
   FEWindow fe_window;
@@ -24,6 +27,8 @@ int main(void) {
 
   GLfloat deltaTime = 0.0f;
   GLfloat lastFrame = 0.0f;
+
+
 
   while (!fe_window.isDone()) {
     fe_window.clear();

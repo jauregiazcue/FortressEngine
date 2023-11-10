@@ -18,6 +18,9 @@ public:
 
 	void Interface(GLfloat deltaTime, FERender& render);
 
+	void CSVMaker(FERender& render);
+	void CSVUpdate(FERender& render);
+
 	int active_voxel_;
 	int active_face_;
 
@@ -29,10 +32,13 @@ public:
 	const float window_size_y = 450.0f;
 
 	bool world_made_;
+	bool offset_;
 
 	int world_voxel_per_row_;
 
 	FEWorld world_;
+	const int csv_file_name_size_ = 80;
+	char csv_file_name_[80];
 };
 
 

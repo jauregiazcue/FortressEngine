@@ -100,6 +100,8 @@ public:
 	float offset_;
 	bool culling_;
 	bool greedy_meshing_;
+
+	
 };
 
 

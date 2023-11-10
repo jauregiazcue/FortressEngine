@@ -4,16 +4,19 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-// Author : jauregiaz
+#include <fstream>
+
 
 FEScene::FEScene() {
   active_voxel_ = 0;
   active_face_ = 0;
   wireframe_ = false;
-  fps_ = 0;
+  fps_ = 1.0f;
   world_made_ = false;
   world_voxel_per_row_ = 1;
-  
+  offset_ = false;
+
+  std::strcpy(csv_file_name_, "../data/test.csv");
 }
 
 FEScene::~FEScene() {
@@ -48,27 +51,11 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
 
     fps_ = 1.0f / deltaTime;
     ImGui::Text("FPS : %03.00f", fps_);
+    ImGui::Text("Time Per Frame : %03.00fms", (1.0f/fps_) * 1000.0f);
     ImGui::Text("Active Triangles : %d", world_.active_faces_ * 2);
     ImGui::Text("Active Faces : %d", world_.active_faces_ );
     ImGui::Text("World Generation : %d ms",
       world_.ms_for_chunk_creation_);
-
-    if (ImGui::InputInt("Voxel", &active_voxel_)) {
-      if (active_voxel_ < 0) {
-        active_voxel_ = 0;
-      }
-
-      if (active_voxel_ >= world_.transform_list_.size()) {
-        active_voxel_ = world_.transform_list_.size() - 1;
-      }
-    }
-    ImGui::SliderInt("Face", &active_face_, 0, 5);
-
-    if (ImGui::Button("Change Face State")) {
-      world_.voxel_list_[active_voxel_].faces_[active_face_].active_ == false ?
-        world_.voxel_list_[active_voxel_].faces_[active_face_].active_ = true :
-        world_.voxel_list_[active_voxel_].faces_[active_face_].active_ = false;
-    }
 
     if (ImGui::Button("Wireframe")) {
       if (wireframe_) {
@@ -80,6 +67,7 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
         wireframe_ = true;
       }
     }
+    
 
     if (ImGui::Button("Destroy World")) {
       world_.voxel_list_.clear();
@@ -89,46 +77,19 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
     }
   }
   else {
-    ImGui::Text("Culling");
-    if (ImGui::Button("True")) {
-      world_.culling_ = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("False")) {
-      world_.culling_ = false;
+    ImGui::Checkbox("Culling",&world_.culling_);
+    ImGui::Checkbox("Greedy Meshing", &world_.greedy_meshing_);
+    ImGui::Checkbox("Colour Picking", &render.colour_picking_);
+    if (ImGui::Checkbox("Offset",&offset_)) {
+      offset_ == true ? world_.offset_ = 1.5f : world_.offset_ = 1.0f;
+
     }
 
-    ImGui::Text( "Greedy Meshing" );
-    if( ImGui::Button( "True###GreedyTrue" ) ) {
-      world_.greedy_meshing_ = true;
-    }
-    ImGui::SameLine();
-    if( ImGui::Button( "False###GreedyFalse" ) ) {
-      world_.greedy_meshing_ = false;
-    }
-
-    ImGui::Text("Offset");
-    if (ImGui::Button("True###OffsetTrue")) {
-      world_.offset_ = 1.5f;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("False###OffsetFalse")) {
-      world_.offset_ = 1.0f;
-    }
-
-    ImGui::Text("Colour Picking");
-    if (ImGui::Button("True###ColourTrue")) {
-      render.colour_picking_ = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("False###ColourFalse")) {
-      render.colour_picking_ = false;
-    }
 
     ImGui::Text("VoxelPerRow");
     if (ImGui::InputInt("##VoxelPerRow", &world_voxel_per_row_)) {
-      if (world_voxel_per_row_ < 0) {
-        world_voxel_per_row_ = 0;
+      if (world_voxel_per_row_ < 1) {
+        world_voxel_per_row_ = 1;
       }
 
       if (world_voxel_per_row_ > 999) {
@@ -146,7 +107,92 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
 
   ImGui::End();
 
+  ImGui::SetNextWindowPos(ImVec2(0, window_size_y), ImGuiCond_Always);
+  ImGui::SetNextWindowSize(ImVec2(window_size_x, window_size_y), ImGuiCond_Always);
+
+  ImGui::Begin("CSV File Maker", NULL, ImGuiWindowFlags_NoResize);
+  ImGui::InputText("CSV", csv_file_name_, csv_file_name_size_);
+  if (ImGui::Button("Make CSV File")) {
+    CSVMaker(render);
+  }
+  if (ImGui::Button("Update CSV File")) {
+    CSVUpdate(render);
+  }
+
+  ImGui::End();
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void FEScene::CSVMaker(FERender& render) {
+  std::ofstream myfile;
+  myfile.open(csv_file_name_);
+
+  myfile << "Culling,"
+    << "Greedy Meshing,"
+    << "Colour Picking,"
+    << "Voxel In Scene,"
+    << "Active Voxels,"
+    << "Active Faces,"
+    << "Active Triangles,"
+    << "FPS,"
+    << "Time Per Frame,"
+    << "Time Taken for World Generation,"
+    << "\n";
+
+  //Culling
+  world_.culling_ == true ? myfile << "True," : myfile << "False,";
+  //Greedy Meshing
+  world_.greedy_meshing_ == true ? myfile << "True," : myfile << "False,";
+  //Colour Picking
+  render.colour_picking_ == true ? myfile << "True," : myfile << "False,";
+  //Voxels in Scene
+  myfile << (world_.voxel_per_row_ * world_.voxel_per_row_ * world_.voxel_per_row_) << ",";
+  //Active Voxels
+  myfile << world_.active_faces_ / 6 << ",";
+  //Active faces
+  myfile << world_.active_faces_ << ",";
+  //Active Triangles
+  myfile << world_.active_faces_ * 2 << ",";
+  //FPS
+  myfile << fps_ << ",";
+  //Times Per Frame
+  myfile << (1.0f / fps_) * 1000.0f << ",";
+  //Time Taken For World Generation
+  myfile << world_.ms_for_chunk_creation_ << "\n";
+
+
+  myfile.close();
+
+
+}
+
+void FEScene::CSVUpdate(FERender& render) {
+  std::ofstream myfile;
+  myfile.open(csv_file_name_, std::ofstream::out | std::ofstream::app);
+
+  //Culling
+  world_.culling_ == true ? myfile << "True," : myfile << "False,";
+  //Greedy Meshing
+  world_.greedy_meshing_ == true ? myfile << "True," : myfile << "False,";
+  //Colour Picking
+  render.colour_picking_ == true ? myfile << "True," : myfile << "False,";
+  //Voxels in Scene
+  myfile << (world_.voxel_per_row_ * world_.voxel_per_row_ * world_.voxel_per_row_) << ",";
+  //Active Voxels
+  myfile << world_.active_faces_ / 6 << ",";
+  //Active faces
+  myfile << world_.active_faces_ << ",";
+  //Active Triangles
+  myfile << world_.active_faces_ * 2 << ",";
+  //FPS
+  myfile << fps_ << ",";
+  //Times Per Frame
+  myfile << (1.0f / fps_) * 1000.0f << ",";
+  //Time Taken For World Generation
+  myfile << world_.ms_for_chunk_creation_ << "\n";
+
+
+  myfile.close();
 }
 
