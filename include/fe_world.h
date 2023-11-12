@@ -52,8 +52,7 @@ public:
 	std::vector<FEMaterialComponent::Vertex> initTopFace();
 	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
-	std::vector<FEMaterialComponent> material_list_;
-	std::vector<FETransformComponent> transform_list_;
+	FEMaterialComponent* material_list_;
 
 	struct Faces {
 		int material_id_;
@@ -86,12 +85,14 @@ public:
 		int voxel_id_;
 		VoxelType type_;
 		Faces faces_[FACES];
+		FETransformComponent transform_;
 	};
+	Voxel* voxel_list_;
 
-	std::vector<Voxel> voxel_list_;
 
 	int voxel_per_row_;
 	int voxel_per_row_and_colum_;
+	int voxel_in_total_;
 
 	int checking = 1;
 	int active_faces_;

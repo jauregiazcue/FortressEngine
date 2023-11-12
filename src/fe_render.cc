@@ -36,7 +36,7 @@ void FERender::Render(FEWorld& world, FEWindow& window) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
+		for (int voxel = 0; voxel < world.voxel_in_total_; voxel++) {
 			world.DrawVoxelForColourPicking(voxel, projection_, view_,
 				colour_picking_program_.get()->getId());
 		}
@@ -57,7 +57,7 @@ void FERender::Render(FEWorld& world, FEWindow& window) {
 	glClearColor(kClearColor.x, kClearColor.y, kClearColor.z, kClearColor.w);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (int voxel = 0; voxel < world.voxel_list_.size(); voxel++) {
+	for (int voxel = 0; voxel < world.voxel_in_total_; voxel++) {
 		world.DrawVoxel(voxel, projection_, view_);
 	}
 

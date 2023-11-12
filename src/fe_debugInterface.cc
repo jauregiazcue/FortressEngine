@@ -15,7 +15,7 @@ FEScene::FEScene() {
   world_made_ = false;
   world_voxel_per_row_ = 1;
   offset_ = false;
-
+  
   std::strcpy(csv_file_name_, "../data/test.csv");
 }
 
@@ -70,8 +70,9 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
     
 
     if (ImGui::Button("Destroy World")) {
-      world_.voxel_list_.clear();
-      world_.transform_list_.clear();
+      delete[] world_.voxel_list_;
+      world_.voxel_list_ = nullptr;
+      world_.voxel_in_total_ = 0;
       world_.active_faces_ = 0;
       world_made_ = false;
     }
