@@ -34,6 +34,7 @@ public:
 	glm::vec4 background_color_;
 	
 	friend class FERender;
+	friend class FEWorld;
 };
 
 

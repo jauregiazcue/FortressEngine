@@ -5,6 +5,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <fstream>
+#include <fe_input.h>
 
 
 FEScene::FEScene() {
@@ -23,14 +24,14 @@ FEScene::~FEScene() {
 
 }
 
-void FEScene::Update(GLfloat deltaTime, FERender& render) {
+void FEScene::Update(GLfloat deltaTime, FERender& render, FEWindow& window ) {
   
   world_.ColourPicking(render.colour_id_, render.destroy_);
-  Interface(deltaTime, render);
+  Interface(deltaTime, render, window );
 }
 
 
-void FEScene::Interface(GLfloat deltaTime, FERender& render) {
+void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
 
@@ -41,7 +42,9 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
 
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
 
-  
+  if( FEInput::mouseKeyPress( Mouse::KEY_MOUSE_LEFT ) ) {
+    world_.CollisionDetection(window,render);
+  }
 
   if (world_made_) {
 
@@ -69,7 +72,7 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
     }
 
     if( ImGui::Button( "CollisionTest" ) ) {
-      world_.CollisionDetection({0.0f,0.0f,0.0f});
+      world_.CollisionDetection(window,render);
     }
     
 

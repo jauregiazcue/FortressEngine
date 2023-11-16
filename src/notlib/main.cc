@@ -38,7 +38,7 @@ int main(void) {
 
     renderer.DebugCameraMovement();
     renderer.Render(scene.world_,fe_window);
-    scene.Update(deltaTime,renderer);
+    scene.Update(deltaTime,renderer,fe_window);
 
     fe_window.swap();
   }

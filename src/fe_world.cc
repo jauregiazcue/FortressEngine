@@ -1,6 +1,6 @@
 #include "fe_world.h"
 #include "fe_constants.h"
-
+#include "fe_render.h"
 #include <GLFW/glfw3.h>
 
 
@@ -27,8 +27,11 @@ FEWorld::FEWorld() {
 }
 
 FEWorld::~FEWorld() {
-  delete[] voxel_list_;
-  voxel_list_ = nullptr;
+  if( voxel_in_total_ > 0 ) {
+    delete[] voxel_list_;
+    voxel_list_ = nullptr;
+  }
+  
 
   delete[] material_list_;
   material_list_ = nullptr;
@@ -208,6 +211,7 @@ void FEWorld::GreedyMeshing() {
 }
 
 void FEWorld::CheckFaces(int voxel_to_check) {
+  int active_faces_now = active_faces_;
 
   if (voxel_to_check - 1 >= 0 && (voxel_to_check % voxel_per_row_) != 0) {
     voxel_list_[voxel_to_check].faces_[FRONTFACE].active_ = false;
@@ -253,7 +257,9 @@ void FEWorld::CheckFaces(int voxel_to_check) {
     voxel_list_[voxel_to_check].faces_[RIGHTFACES].colour_picking_active_ = false;
     active_faces_ -= 1;
 
-  } 
+  }
+
+
 }
 
 
@@ -267,7 +273,6 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
         if (voxel_list_[i].type_ != VoxelType::air) {
           if (voxel_list_[i].faces_[x].real_color_id_ == colour_id) {
             if (destroy) {
-              printf("%d\n", i);
               DestroyVoxel(i);
               if (culling_) UpdateAdjacentFacesWhenDestroy(i);
               return;
@@ -284,15 +289,55 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
 }
 
-void FEWorld::CollisionDetection( glm::vec3 point ) {
-  for( int i = 0; i < voxel_in_total_; i++ ) {
-    int checker = CollisionCheck(voxel_list_[i].transform_.getPosition(), point );
-    if( checker == 1 ) {
-      DestroyVoxel( i );
-      if( culling_ ) UpdateAdjacentFacesWhenDestroy( i );
+void FEWorld::CollisionDetection( FEWindow& window, FERender& render ) {
+  if( voxel_in_total_ > 0 ) {
+
+    glm::vec3 start{Raycast( window, render, 1.0f ) };
+    glm::mat4 cT = render.camera_transform_.getTransform();
+    glm::vec3 distance{ cT[2].x, cT[2].y, cT[2].z };
+    distance = glm::normalize( distance );
+    distance *= -100.0f;
+
+    glm::vec3 end{start + distance};
+
+    glm::vec3 point = voxel_list_[0].transform_.getPosition();
+
+    glm::vec3 ab = start - end;
+    glm::vec3 ap = start - point;
+    glm::vec3 bp = end - point;
+
+    if( glm::dot( ab, ap ) > 0.0f && glm::dot( ab, bp ) < 0.0f ) {
+      glm::vec3 aux = glm::cross(ab,ap);
+     float perpendicular_distance = 
+       glm::sqrt( glm::dot(aux,aux) ) / glm::sqrt( glm::dot( ab, ab ) );
+     printf( "%f\n", perpendicular_distance );
+     if( perpendicular_distance < 5.0f ) {
+       DestroyVoxel(0);
+     }
     }
-      
+
   }
+  
+  /*line = glm::normalize(line);
+  bool ending = false;
+  while( ending = true ) {
+    
+    for( int i = 0; i < voxel_in_total_; i++ ) {
+      if( voxel_list_[i].type_ != VoxelType::air ) {
+        int checker = CollisionCheck( voxel_list_[i].transform_.getPosition(), start );
+        if( checker == 1 ) {
+          printf( "Destroyed : %d\n", i );
+          DestroyVoxel( i );
+          if( culling_ ) UpdateAdjacentFacesWhenDestroy( i );
+          return;
+        }
+      }
+    }
+    start += line;
+    
+  }*/
+
+  
 }
 
 int FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
@@ -312,6 +357,43 @@ int FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
   if( voxelMax.z < mouseMin.z || voxelMin.z > mouseMax.z ) return 0;
   // Overlapping on all axes means AABBs are intersecting
   return 1;
+}
+
+glm::vec3 FEWorld::Raycast( FEWindow& window, FERender& render, float distance_helper ) {
+  //Get the position of the mouse
+  double xpos, ypos;
+  glfwGetCursorPos( window.window_.get(), &xpos, &ypos );
+
+  //Get the height of the window
+  int height,width;
+  glfwGetWindowSize( window.window_.get(), &width, &height );
+
+  //Get the Raycast Clip Coordinates
+  glm::vec4 ray_clip_coords{
+    (2.0f * xpos) / width - 1.0f, // Normalize Coords of the X of the raycast
+    1.0f - (2.0f * ypos) / height,// Normalize Coords of the Y of the raycast
+    -1.0f,1.0f};
+
+
+  
+  //Get the Camera Coordinate for the raycast
+  glm::vec4 ray_camera_coords{glm::inverse( render.projection_ ) * ray_clip_coords};
+
+  //Change the z due to -1.0f being forward in OpenGl (we want the ray to go forward)
+  ray_camera_coords = {ray_camera_coords.x,ray_camera_coords.y,-1.0f,0.0f};
+
+  //Get the World Coordinate for the Raycast
+  glm::vec4 ray_world_coords{glm::inverse(render.view_) * ray_camera_coords};
+  ray_world_coords = glm::normalize(ray_world_coords);
+
+  
+  glm::vec3 ray{
+    ray_world_coords.x,
+    ray_world_coords.y,
+    ray_world_coords.z};
+  ray += render.camera_transform_.getPosition();
+
+  return ray;
 }
 
 

@@ -14,9 +14,9 @@ public:
 
 	~FEScene();
 
-	void Update(GLfloat deltaTime,FERender& render);
+	void Update(GLfloat deltaTime,FERender& render, FEWindow& window );
 
-	void Interface(GLfloat deltaTime, FERender& render);
+	void Interface(GLfloat deltaTime, FERender& render,FEWindow& window);
 
 	void CSVMaker(FERender& render);
 	void CSVUpdate(FERender& render);

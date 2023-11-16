@@ -41,7 +41,7 @@ public:
 		FETransformComponent camera_transform_;
 		std::shared_ptr<FEProgram> colour_picking_program_;
 		
-		
+		friend class FEWorld;
 };
 
 

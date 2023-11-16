@@ -37,8 +37,9 @@ public:
 	
 
 	void ColourPicking(int colour_id, bool destroy);
-	void CollisionDetection( glm::vec3 point );
+	void CollisionDetection( FEWindow& window, FERender& render );
 	int CollisionCheck( glm::vec3 voxel, glm::vec3 mouse );
+	glm::vec3 Raycast( FEWindow& window, FERender& render,float distance_helper );
 
 	void DestroyVoxel(int voxel_id);
 
