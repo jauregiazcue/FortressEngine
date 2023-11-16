@@ -37,6 +37,8 @@ public:
 	
 
 	void ColourPicking(int colour_id, bool destroy);
+	void CollisionDetection( glm::vec3 point );
+	int CollisionCheck( glm::vec3 voxel, glm::vec3 mouse );
 
 	void DestroyVoxel(int voxel_id);
 

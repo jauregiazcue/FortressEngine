@@ -284,6 +284,37 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
 }
 
+void FEWorld::CollisionDetection( glm::vec3 point ) {
+  for( int i = 0; i < voxel_in_total_; i++ ) {
+    int checker = CollisionCheck(voxel_list_[i].transform_.getPosition(), point );
+    if( checker == 1 ) {
+      DestroyVoxel( i );
+      if( culling_ ) UpdateAdjacentFacesWhenDestroy( i );
+    }
+      
+  }
+}
+
+int FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
+  //AABBAABB collision test created using :
+  //http://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf
+  //as reference (page 117 - 118)
+
+  float range = 0.5f;
+  glm::vec3 voxelMax = {voxel.x + range,voxel.y + range,voxel.z + range};
+  glm::vec3 voxelMin = {voxel.x - range,voxel.y - range,voxel.z - range};
+  range = 0.1f;
+  glm::vec3 mouseMax = {mouse.x + range,mouse.y + range,mouse.z + range};
+  glm::vec3 mouseMin = {mouse.x - range,mouse.y - range,mouse.z - range};
+  // Exit with no intersection if separated along an axis
+  if( voxelMax.x < mouseMin.x || voxelMin.x > mouseMax.x ) return 0;
+  if( voxelMax.y < mouseMin.y || voxelMin.y > mouseMax.y ) return 0;
+  if( voxelMax.z < mouseMin.z || voxelMin.z > mouseMax.z ) return 0;
+  // Overlapping on all axes means AABBs are intersecting
+  return 1;
+}
+
+
 void FEWorld::DestroyVoxel(int voxel_id) {
   voxel_list_[voxel_id].type_ = VoxelType::air;
   if (voxel_list_[voxel_id].faces_[FRONTFACE].active_) {

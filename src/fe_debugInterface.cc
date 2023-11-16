@@ -67,6 +67,10 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render) {
         wireframe_ = true;
       }
     }
+
+    if( ImGui::Button( "CollisionTest" ) ) {
+      world_.CollisionDetection({0.0f,0.0f,0.0f});
+    }
     
 
     if (ImGui::Button("Destroy World")) {
