@@ -23,7 +23,7 @@ FERender::FERender() {
 
 	colour_id_ = -1;
 	destroy_ = false;
-	colour_picking_ = true;
+	colour_picking_ = false;
 }
 
 void FERender::Render(FEWorld& world, FEWindow& window) {

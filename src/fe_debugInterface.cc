@@ -71,9 +71,7 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
       }
     }
 
-    if( ImGui::Button( "CollisionTest" ) ) {
-      world_.CollisionDetection(window,render);
-    }
+
     
 
     if (ImGui::Button("Destroy World")) {
@@ -86,8 +84,17 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   }
   else {
     ImGui::Checkbox("Culling",&world_.culling_);
-    ImGui::Checkbox("Greedy Meshing", &world_.greedy_meshing_);
-    ImGui::Checkbox("Colour Picking", &render.colour_picking_);
+    //ImGui::Checkbox("Greedy Meshing", &world_.greedy_meshing_);
+    if (ImGui::Checkbox("Colour Picking", &render.colour_picking_)) {
+      render.colour_picking_ == true ? 
+        world_.collision_detection_ = false : world_.collision_detection_ = true;
+    }
+
+    if (ImGui::Checkbox("Collision Detection", &world_.collision_detection_)) {
+      world_.collision_detection_ == true ?
+        render.colour_picking_ = false : render.colour_picking_ = true;
+    }
+    
     if (ImGui::Checkbox("Offset",&offset_)) {
       offset_ == true ? world_.offset_ = 1.5f : world_.offset_ = 1.0f;
 

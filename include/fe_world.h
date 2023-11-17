@@ -104,7 +104,7 @@ public:
 	float offset_;
 	bool culling_;
 	bool greedy_meshing_;
-
+	bool collision_detection_;
 	
 };
 

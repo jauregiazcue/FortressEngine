@@ -24,6 +24,7 @@ FEWorld::FEWorld() {
 
   culling_ = true;
   greedy_meshing_ = false;
+  collision_detection_ = true;
 }
 
 FEWorld::~FEWorld() {
