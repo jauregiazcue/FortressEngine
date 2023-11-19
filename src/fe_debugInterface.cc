@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <fe_input.h>
+#include "fe_constants.h"
 
 
 FEScene::FEScene() {
@@ -34,8 +35,20 @@ void FEScene::Update(GLfloat deltaTime, FERender& render, FEWindow& window ) {
 void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
-
   ImGui::NewFrame();
+  if (world_made_) {
+    
+
+    ImGui::SetNextWindowPos(ImVec2(kWindowCenterWidth - 2.0f, kWindowCenterHeight - 2.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(2.0f, 2.0f), ImGuiCond_Always);
+
+    ImGui::Begin("Center", NULL, ImGuiWindowFlags_NoResize);
+
+    ImGui::End();
+  }
+  
+
+
 
   ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
   ImGui::SetNextWindowSize(ImVec2(window_size_x, window_size_y), ImGuiCond_Always);
@@ -43,14 +56,22 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
 
   if( FEInput::mouseKeyPress( Mouse::KEY_MOUSE_LEFT ) ) {
-    world_.CollisionDetection(window,render);
+    world_.CollisionDetection(window,render,true);
+  }
+
+  if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_RIGHT)) {
+    world_.CollisionDetection(window, render, false);
   }
 
   if (world_made_) {
 
-    ImVec2 wsize = { 200,200 };
-    ImGui::Image((ImTextureID)render.color_picking_buffer_.texture_id_,
-      wsize, { 0,1 }, { 1,0 });
+
+    if (render.colour_picking_) {
+      ImVec2 wsize = { 200,200 };
+      ImGui::Image((ImTextureID)render.color_picking_buffer_.texture_id_,
+        wsize, { 0,1 }, { 1,0 });
+    }
+    
 
     fps_ = 1.0f / deltaTime;
     ImGui::Text("FPS : %03.00f", fps_);

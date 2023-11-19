@@ -112,28 +112,27 @@ FEWorld::Faces* FEWorld::GetFaces(int voxel_id, glm::vec3 position ) {
     faces_[i].color_id_ =    { ((color_id_helper & 0x000000FF) >> 0)  / 255.0f ,
                                ((color_id_helper & 0x0000FF00) >> 8)  / 255.0f ,
                                ((color_id_helper & 0x00FF0000) >> 16) / 255.0f };
-    faces_[i].transform_.setPosition( position );
 
   }
 
   return faces_;
 }
 
-void FEWorld::DrawVoxel(int voxel_id_, glm::mat4 projection, glm::mat4 view) {
-  if (voxel_list_[voxel_id_].type_ != VoxelType::air) {
-    DrawFace(voxel_id_, FRONTFACE, projection, view);
-    DrawFace(voxel_id_, LEFTFACES, projection, view);
-    DrawFace(voxel_id_, BACKFACES, projection, view);
-    DrawFace(voxel_id_, RIGHTFACES, projection, view);
-    DrawFace(voxel_id_, TOPFACES, projection, view);
-    DrawFace(voxel_id_, BOTTOMFACES, projection, view);
+void FEWorld::DrawVoxel(int voxel_id, glm::mat4 projection, glm::mat4 view) {
+  if (voxel_list_[voxel_id].type_ != VoxelType::air) {
+    DrawFace(voxel_id, FRONTFACE, projection, view);
+    DrawFace(voxel_id, LEFTFACES, projection, view);
+    DrawFace(voxel_id, BACKFACES, projection, view);
+    DrawFace(voxel_id, RIGHTFACES, projection, view);
+    DrawFace(voxel_id, TOPFACES, projection, view);
+    DrawFace(voxel_id, BOTTOMFACES, projection, view);
   }
   
 }
 
 
-void FEWorld::DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::mat4 view) {
-  Faces& drawing_face = voxel_list_[voxel_id_].faces_[face_id_];
+void FEWorld::DrawFace(int voxel_id,int face_id, glm::mat4 projection, glm::mat4 view) {
+  Faces& drawing_face = voxel_list_[voxel_id].faces_[face_id];
   if ( drawing_face.active_) {
     FEMaterialComponent& material = 
       material_list_[drawing_face.material_id_];
@@ -143,7 +142,7 @@ void FEWorld::DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::ma
     material.setUpReferenceUniform("PickingColour",
       drawing_face.color_id_);
 
-    material.setUpModel( drawing_face.transform_.getTransform());
+    material.setUpModel( voxel_list_[voxel_id].transform_.getTransform());
 
     material.setUpCamera(projection, view);
 
@@ -151,20 +150,20 @@ void FEWorld::DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::ma
   }
 }
 
-void FEWorld::DrawVoxelForColourPicking(int voxel_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
-  if (voxel_list_[voxel_id_].type_ != VoxelType::air) {
-    DrawFaceForColourPicking(voxel_id_, FRONTFACE, projection, view, program_id);
-    DrawFaceForColourPicking(voxel_id_, LEFTFACES, projection, view, program_id);
-    DrawFaceForColourPicking(voxel_id_, BACKFACES, projection, view, program_id);
-    DrawFaceForColourPicking(voxel_id_, RIGHTFACES, projection, view, program_id);
-    DrawFaceForColourPicking(voxel_id_, TOPFACES, projection, view, program_id);
-    DrawFaceForColourPicking(voxel_id_, BOTTOMFACES,projection, view, program_id);
+void FEWorld::DrawVoxelForColourPicking(int voxel_id, glm::mat4 projection, glm::mat4 view, int program_id) {
+  if (voxel_list_[voxel_id].type_ != VoxelType::air) {
+    DrawFaceForColourPicking(voxel_id, FRONTFACE, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id, LEFTFACES, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id, BACKFACES, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id, RIGHTFACES, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id, TOPFACES, projection, view, program_id);
+    DrawFaceForColourPicking(voxel_id, BOTTOMFACES,projection, view, program_id);
   }
   
 }
 
-void FEWorld::DrawFaceForColourPicking(int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id) {
-  Faces& drawing_face = voxel_list_[voxel_id_].faces_[face_id_];
+void FEWorld::DrawFaceForColourPicking(int voxel_id, int face_id, glm::mat4 projection, glm::mat4 view, int program_id) {
+  Faces& drawing_face = voxel_list_[voxel_id].faces_[face_id];
   if ( drawing_face.colour_picking_active_ ) {
     FEMaterialComponent& material =
       material_list_[drawing_face.material_id_];
@@ -175,7 +174,7 @@ void FEWorld::DrawFaceForColourPicking(int voxel_id_, int face_id_, glm::mat4 pr
       drawing_face.color_id_, program_id);
 
     material.setUpModelWithOtherProgram(
-      voxel_list_[voxel_id_].transform_.getTransform(), program_id);
+      voxel_list_[voxel_id].transform_.getTransform(), program_id);
 
     material.setUpCameraWithOtherProgram(projection, view, program_id);
 
@@ -290,58 +289,38 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
 }
 
-void FEWorld::CollisionDetection( FEWindow& window, FERender& render ) {
+void FEWorld::CollisionDetection( FEWindow& window, FERender& render, bool destroy ) {
   if( voxel_in_total_ > 0 ) {
-
-    glm::vec3 start{Raycast( window, render, 1.0f ) };
+    //Get the forward of the camera
     glm::mat4 cT = render.camera_transform_.getTransform();
-    glm::vec3 distance{ cT[2].x, cT[2].y, cT[2].z };
-    distance = glm::normalize( distance );
-    distance *= -100.0f;
+    glm::vec3 forward{ cT[2].x, cT[2].y, cT[2].z };
+    forward = glm::normalize(forward);
+    forward *= -100.0f;
 
-    glm::vec3 end{start + distance};
+    //Get the start and end position of the line
+    glm::vec3 start{ render.camera_transform_.getPosition() };
+    glm::vec3 end = start + forward + glm::vec3{1.0f,1.0f,1.0f};
 
-    glm::vec3 point = voxel_list_[0].transform_.getPosition();
-
-    glm::vec3 ab = start - end;
-    glm::vec3 ap = start - point;
-    glm::vec3 bp = end - point;
-
-    if( glm::dot( ab, ap ) > 0.0f && glm::dot( ab, bp ) < 0.0f ) {
-      glm::vec3 aux = glm::cross(ab,ap);
-     float perpendicular_distance = 
-       glm::sqrt( glm::dot(aux,aux) ) / glm::sqrt( glm::dot( ab, ab ) );
-     printf( "%f\n", perpendicular_distance );
-     if( perpendicular_distance < 5.0f ) {
-       DestroyVoxel(0);
-     }
-    }
-
-  }
-  
-  /*line = glm::normalize(line);
-  bool ending = false;
-  while( ending = true ) {
-    
-    for( int i = 0; i < voxel_in_total_; i++ ) {
-      if( voxel_list_[i].type_ != VoxelType::air ) {
-        int checker = CollisionCheck( voxel_list_[i].transform_.getPosition(), start );
-        if( checker == 1 ) {
-          printf( "Destroyed : %d\n", i );
-          DestroyVoxel( i );
-          if( culling_ ) UpdateAdjacentFacesWhenDestroy( i );
-          return;
+    for (int i = 0; i < voxel_in_total_; i++) {
+      for (int x = 0; x < FACES; x++) {
+        if (CheckIntersection(start, end, i,x) && voxel_list_[i].type_ != VoxelType::air) {
+          if (destroy) {
+            DestroyVoxel(i);
+            if (culling_) UpdateAdjacentFacesWhenDestroy(i);
+            return;
+          } else {
+            PlaceVoxel(i, x);
+            return;
+          }
+          
         }
       }
+      
     }
-    start += line;
-    
-  }*/
-
-  
+  }
 }
 
-int FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
+bool FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
   //AABBAABB collision test created using :
   //http://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf
   //as reference (page 117 - 118)
@@ -353,11 +332,11 @@ int FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
   glm::vec3 mouseMax = {mouse.x + range,mouse.y + range,mouse.z + range};
   glm::vec3 mouseMin = {mouse.x - range,mouse.y - range,mouse.z - range};
   // Exit with no intersection if separated along an axis
-  if( voxelMax.x < mouseMin.x || voxelMin.x > mouseMax.x ) return 0;
-  if( voxelMax.y < mouseMin.y || voxelMin.y > mouseMax.y ) return 0;
-  if( voxelMax.z < mouseMin.z || voxelMin.z > mouseMax.z ) return 0;
+  if ( voxelMax.x < mouseMin.x || voxelMin.x > mouseMax.x ) return false;
+  if ( voxelMax.y < mouseMin.y || voxelMin.y > mouseMax.y ) return false;
+  if ( voxelMax.z < mouseMin.z || voxelMin.z > mouseMax.z ) return false;
   // Overlapping on all axes means AABBs are intersecting
-  return 1;
+  return true;
 }
 
 glm::vec3 FEWorld::Raycast( FEWindow& window, FERender& render, float distance_helper ) {
@@ -396,7 +375,6 @@ glm::vec3 FEWorld::Raycast( FEWindow& window, FERender& render, float distance_h
 
   return ray;
 }
-
 
 void FEWorld::DestroyVoxel(int voxel_id) {
   voxel_list_[voxel_id].type_ = VoxelType::air;
@@ -624,7 +602,6 @@ void FEWorld::UpdateAdjacentFacesWhenPlace(int voxel_to_check) {
   }
 }
 
-
 std::vector<FEMaterialComponent::Vertex> FEWorld::initFrontFace() {
 
   std::vector<FEMaterialComponent::Vertex> vertices;
@@ -786,6 +763,75 @@ std::vector<FEMaterialComponent::Vertex> FEWorld::initBottomFace() {
                        {1.0f,1.0f} }); // top right
 
   return vertices;
+}
+
+bool FEWorld::CheckIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id) {
+  bool intersection;
+  if (voxel_list_[voxel_id].faces_[face_id].active_) {
+    intersection = IntersectSegmentPlane(ray_start, ray_end, voxel_id, face_id);
+    
+    if (intersection) {
+      intersection = CollisionCheck(voxel_list_[voxel_id].transform_.getPosition(), point_to_check);
+      if (intersection) return true;
+    }
+  }
+  return false;
+}
+
+bool FEWorld::IntersectSegmentPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type) {
+  glm::vec3 a, b, c;
+  switch (face_type) {
+  case FRONTFACE :
+    a = { -0.5f,-0.5f,0.5f };
+    b = { 0.5f,-0.5f,0.5f };
+    c = { -0.5f,0.5f,0.5f };
+    break;
+  case LEFTFACES:
+    a = { -0.5f,-0.5f,-0.5f };
+    b = { -0.5f,-0.5f,0.5f };
+    c = { -0.5f,0.5f,-0.5f };
+    break;
+  case BACKFACES:
+    a = { 0.5f,-0.5f,-0.5f };
+    b = { -0.5f,-0.5f,-0.5f };
+    c = { 0.5f,0.5f,-0.5f };
+    break;
+  case RIGHTFACES:
+    a = { 0.5f,-0.5f,0.5f };
+    b = { 0.5f,-0.5f,-0.5f };
+    c = { 0.5f,0.5f,0.5f };
+    break;
+  case TOPFACES:
+    a = { -0.5f,0.5f,0.5f };
+    b = { 0.5f,0.5f,0.5f };
+    c = { -0.5f,0.5f,-0.5f };
+    break;
+  case BOTTOMFACES:
+    a = { 0.5f,-0.5f,0.5f };
+    b = { -0.5f,-0.5f,0.5f };
+    c = { 0.5f,-0.5f,-0.5f };
+    break;
+  }
+
+  a += voxel_list_[voxel_id].transform_.getPosition();
+  b += voxel_list_[voxel_id].transform_.getPosition();
+  c += voxel_list_[voxel_id].transform_.getPosition();
+
+  //Get the normal of the Face
+  glm::vec3 normal = glm::normalize(glm::cross(b - a, c - a));
+
+  //Get the dot of the normal and a point in the plane
+  float dotOfPlane = glm::dot(normal, a);
+
+  glm::vec3 ray = ray_end - ray_start;
+
+  float t = (dotOfPlane - glm::dot(normal, ray_start)) / glm::dot(normal, ray);
+  if (t >= 0.0f && t <= 1.0f) {
+    point_to_check = ray_start + t * ray;
+    return true;
+  }
+
+  return false;
 }
 
 

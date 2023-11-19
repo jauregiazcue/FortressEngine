@@ -4,6 +4,9 @@
 
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 700;
+
+	const int kWindowCenterWidth = kWindowWidth / 2;
+	const int kWindowCenterHeight = kWindowHeight / 2;
 	const glm::vec4 kClearColor{1.0f,1.0f,1.0f,1.0f};
 	const char kWindowName[] = "FortressEngine";
 

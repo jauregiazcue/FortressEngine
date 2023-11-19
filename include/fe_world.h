@@ -20,15 +20,15 @@ public:
 
 	void createChunks();
 
-	void DrawVoxel(int voxel_id_, glm::mat4 projection, glm::mat4 view);
+	void DrawVoxel(int voxel_id, glm::mat4 projection, glm::mat4 view);
 
-	void DrawFace(int voxel_id_,int face_id_, glm::mat4 projection, glm::mat4 view);
+	void DrawFace(int voxel_id,int face_id, glm::mat4 projection, glm::mat4 view);
 
 	void DrawVoxelForColourPicking(
-		int voxel_id_, glm::mat4 projection, glm::mat4 view,int program_id);
+		int voxel_id, glm::mat4 projection, glm::mat4 view,int program_id);
 
 	void DrawFaceForColourPicking(
-		int voxel_id_, int face_id_, glm::mat4 projection, glm::mat4 view, int program_id);
+		int voxel_id, int face_id, glm::mat4 projection, glm::mat4 view, int program_id);
 
 	void Culling();
 	void GreedyMeshing();
@@ -37,8 +37,9 @@ public:
 	
 
 	void ColourPicking(int colour_id, bool destroy);
-	void CollisionDetection( FEWindow& window, FERender& render );
-	int CollisionCheck( glm::vec3 voxel, glm::vec3 mouse );
+	void CollisionDetection( FEWindow& window, FERender& render, bool destroy );
+	bool CollisionCheck( glm::vec3 voxel, glm::vec3 mouse );
+
 	glm::vec3 Raycast( FEWindow& window, FERender& render,float distance_helper );
 
 	void DestroyVoxel(int voxel_id);
@@ -55,6 +56,10 @@ public:
 	std::vector<FEMaterialComponent::Vertex> initTopFace();
 	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
+
+	bool CheckIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id);
+	bool IntersectSegmentPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type);
+
 	FEMaterialComponent* material_list_;
 
 	struct Faces {
@@ -63,7 +68,6 @@ public:
 		bool colour_picking_active_;
 		glm::vec3 color_id_;
 		int real_color_id_;
-		FETransformComponent transform_;
 	};
 
 	Faces* GetFaces(int voxel_id,glm::vec3 position);
@@ -105,7 +109,7 @@ public:
 	bool culling_;
 	bool greedy_meshing_;
 	bool collision_detection_;
-	
+	glm::vec3 point_to_check;
 };
 
 
