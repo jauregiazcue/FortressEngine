@@ -56,11 +56,11 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
 
   if( FEInput::mouseKeyPress( Mouse::KEY_MOUSE_LEFT ) ) {
-    world_.CollisionDetection(window,render,true);
+    world_.CollisionDetection(render,true);
   }
 
   if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_RIGHT)) {
-    world_.CollisionDetection(window, render, false);
+    world_.CollisionDetection( render, false);
   }
 
   if (world_made_) {

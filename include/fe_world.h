@@ -32,13 +32,16 @@ public:
 
 	void Culling();
 	void GreedyMeshing();
-	void Octrees();
+	void GenerateOctreeNodes();
+	void SetNodesCenter();
+	void SetNodesVoxels();
+	void SetNodeCenter(int node_to_set,int corner_voxel, glm::vec3 second_point);
 
 	void CheckFaces(int voxel_to_check);
 	
 
 	void ColourPicking(int colour_id, bool destroy);
-	void CollisionDetection( FEWindow& window, FERender& render, bool destroy );
+	void CollisionDetection( FERender& render, bool destroy );
 	bool CollisionCheck( glm::vec3 voxel, glm::vec3 mouse );
 
 	glm::vec3 Raycast( FEWindow& window, FERender& render,float distance_helper );
@@ -79,13 +82,6 @@ public:
 		innactive = 2
 	};
 
-	struct CollisionNodes {
-		std::vector<int> voxels_;
-
-	};
-
-	CollisionNodes nodes_[8];
-
 	#define FRONTFACE 0
 	#define LEFTFACES 1
 	#define BACKFACES 2
@@ -93,6 +89,15 @@ public:
 	#define TOPFACES 4
 	#define BOTTOMFACES 5
 	#define FACES 6
+	#define NODES 8
+
+	struct CollisionNodes {
+		std::vector<int> voxels_;
+		glm::vec3 center_;
+	};
+
+
+	CollisionNodes nodes_[NODES];
 	
 	struct Voxel {
 		int voxel_id_;

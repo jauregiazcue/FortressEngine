@@ -61,6 +61,7 @@ void FEWorld::init(int voxelPerRow) {
     GreedyMeshing();
   }
   
+  GenerateOctreeNodes();
 }
 
 void FEWorld::createChunks() {
@@ -210,6 +211,59 @@ void FEWorld::GreedyMeshing() {
   
 }
 
+void FEWorld::GenerateOctreeNodes() {
+  SetNodesCenter();
+  SetNodesVoxels();
+  
+   
+  for (int i = 0; i < NODES; i++) {
+    printf("\nNode %d :  \n", i);
+    for (int x = 0; x < nodes_[i].voxels_.size(); x++) {
+      printf("%d, ", nodes_[i].voxels_[x]);
+    }
+  }
+}
+
+void FEWorld::SetNodesCenter() {
+  glm::vec3 first_point = voxel_list_[0].transform_.getPosition();
+  glm::vec3 last_point = voxel_list_[voxel_in_total_ - 1].transform_.getPosition();
+  glm::vec3 center_point{
+    (first_point.x + last_point.x) * 0.5f,
+    (first_point.y + last_point.y) * 0.5f,
+    (first_point.z + last_point.z) * 0.5f };
+
+  //Top Front Left
+  SetNodeCenter(0, 0, center_point);
+  //Top Back Left
+  SetNodeCenter(1, voxel_per_row_ - 1, center_point);
+  //Bottom Front Left
+  SetNodeCenter(2, voxel_per_row_and_colum_ - voxel_per_row_, center_point);
+  //Bottom Back Left
+  SetNodeCenter(3, voxel_per_row_and_colum_ - 1, center_point);
+
+  //Top Front Right
+  SetNodeCenter(4, voxel_per_row_and_colum_ * voxel_per_row_and_colum_, center_point);
+  //Top Back Right
+  SetNodeCenter(5, (voxel_per_row_and_colum_ * voxel_per_row_and_colum_) + voxel_per_row_ - 1, center_point);
+  //Bottom Front Right
+  SetNodeCenter(6, voxel_in_total_ - voxel_per_row_, center_point);
+  //Bottom Back Right
+  SetNodeCenter(7, voxel_in_total_ - 1, center_point);
+}
+
+void FEWorld::SetNodesVoxels()
+{
+}
+
+void FEWorld::SetNodeCenter(int node_to_set, int corner_voxel, glm::vec3 second_point) {
+  glm::vec3 first_point = voxel_list_[corner_voxel].transform_.getPosition();
+  nodes_[node_to_set].center_ = {
+   (first_point.x + second_point.x) * 0.5f,
+   (first_point.y + second_point.y) * 0.5f,
+   (first_point.z + second_point.z) * 0.5f };
+}
+
+
 void FEWorld::CheckFaces(int voxel_to_check) {
   int active_faces_now = active_faces_;
 
@@ -263,7 +317,6 @@ void FEWorld::CheckFaces(int voxel_to_check) {
 }
 
 
-
 void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
   if (colour_id != -1) {
@@ -289,7 +342,7 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
 }
 
-void FEWorld::CollisionDetection( FEWindow& window, FERender& render, bool destroy ) {
+void FEWorld::CollisionDetection( FERender& render, bool destroy ) {
   if( voxel_in_total_ > 0 ) {
     //Get the forward of the camera
     glm::mat4 cT = render.camera_transform_.getTransform();
