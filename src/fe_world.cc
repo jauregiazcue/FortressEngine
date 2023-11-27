@@ -242,9 +242,9 @@ void FEWorld::SetNodesCenter() {
   SetNodeCenter(3, voxel_per_row_and_colum_ - 1, center_point);
 
   //Top Front Right
-  SetNodeCenter(4, voxel_per_row_and_colum_ * voxel_per_row_and_colum_, center_point);
+  SetNodeCenter(4, voxel_per_row_and_colum_ * (voxel_per_row_ - 1), center_point);
   //Top Back Right
-  SetNodeCenter(5, (voxel_per_row_and_colum_ * voxel_per_row_and_colum_) + voxel_per_row_ - 1, center_point);
+  SetNodeCenter(5, (voxel_per_row_and_colum_ * (voxel_per_row_ - 1)) + voxel_per_row_ - 1, center_point);
   //Bottom Front Right
   SetNodeCenter(6, voxel_in_total_ - voxel_per_row_, center_point);
   //Bottom Back Right

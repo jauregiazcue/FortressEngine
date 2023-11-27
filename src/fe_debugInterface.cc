@@ -39,12 +39,12 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   if (world_made_) {
     
 
-    ImGui::SetNextWindowPos(ImVec2(kWindowCenterWidth - 2.0f, kWindowCenterHeight - 2.0f), ImGuiCond_Always);
+    /*ImGui::SetNextWindowPos(ImVec2(kWindowCenterWidth - 2.0f, kWindowCenterHeight - 2.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(2.0f, 2.0f), ImGuiCond_Always);
 
     ImGui::Begin("Center", NULL, ImGuiWindowFlags_NoResize);
 
-    ImGui::End();
+    ImGui::End();*/
   }
   
 
