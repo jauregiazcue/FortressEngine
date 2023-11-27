@@ -32,6 +32,7 @@ public:
 
 	void Culling();
 	void GreedyMeshing();
+	void Octrees();
 
 	void CheckFaces(int voxel_to_check);
 	
@@ -78,7 +79,12 @@ public:
 		innactive = 2
 	};
 
+	struct CollisionNodes {
+		std::vector<int> voxels_;
 
+	};
+
+	CollisionNodes nodes_[8];
 
 	#define FRONTFACE 0
 	#define LEFTFACES 1
