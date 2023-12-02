@@ -42,7 +42,7 @@ public:
 
 	void ColourPicking(int colour_id, bool destroy);
 	void CollisionDetection( FERender& render, bool destroy );
-	bool CollisionCheck( glm::vec3 voxel, glm::vec3 mouse );
+	bool CollisionCheck( glm::vec3 voxel, glm::vec3 mouse, float first_range,float second_range );
 
 	glm::vec3 Raycast( FEWindow& window, FERender& render,float distance_helper );
 
@@ -98,6 +98,7 @@ public:
 
 
 	CollisionNodes nodes_[NODES];
+	float nodes_size_;
 	
 	struct Voxel {
 		int voxel_id_;

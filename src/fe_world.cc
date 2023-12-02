@@ -214,14 +214,6 @@ void FEWorld::GreedyMeshing() {
 void FEWorld::GenerateOctreeNodes() {
   SetNodesCenter();
   SetNodesVoxels();
-  
-   
-  for (int i = 0; i < NODES; i++) {
-    printf("\nNode %d :  \n", i);
-    for (int x = 0; x < nodes_[i].voxels_.size(); x++) {
-      printf("%d, ", nodes_[i].voxels_[x]);
-    }
-  }
 }
 
 void FEWorld::SetNodesCenter() {
@@ -251,8 +243,24 @@ void FEWorld::SetNodesCenter() {
   SetNodeCenter(7, voxel_in_total_ - 1, center_point);
 }
 
-void FEWorld::SetNodesVoxels()
-{
+void FEWorld::SetNodesVoxels() {
+  nodes_size_ = ((float)voxel_per_row_ * 0.25f) - 0.5f;
+  for (int node = 0; node < NODES; node++) {
+    for (int voxel = 0; voxel < voxel_in_total_; voxel++) {
+      if (CollisionCheck(nodes_[node].center_, voxel_list_[voxel].transform_.getPosition(),
+        nodes_size_, 0.5f)) {
+        nodes_[node].voxels_.push_back(voxel);
+      }
+    }
+  }
+
+  /*for (int node = 0; node < NODES; node++) {
+    printf("\nNode %d : \n", node);
+    for (int voxel = 0; voxel < nodes_[node].voxels_.size(); voxel++) {
+      printf("%d, ",nodes_[node].voxels_[voxel]);
+    }
+  }*/
+
 }
 
 void FEWorld::SetNodeCenter(int node_to_set, int corner_voxel, glm::vec3 second_point) {
@@ -373,17 +381,17 @@ void FEWorld::CollisionDetection( FERender& render, bool destroy ) {
   }
 }
 
-bool FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse ) {
+bool FEWorld::CollisionCheck( glm::vec3 voxel, glm::vec3 mouse, float first_range, float second_range) {
   //AABBAABB collision test created using :
   //http://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf
   //as reference (page 117 - 118)
 
   float range = 0.5f;
-  glm::vec3 voxelMax = {voxel.x + range,voxel.y + range,voxel.z + range};
-  glm::vec3 voxelMin = {voxel.x - range,voxel.y - range,voxel.z - range};
+  glm::vec3 voxelMax = {voxel.x + first_range,voxel.y + first_range,voxel.z + first_range };
+  glm::vec3 voxelMin = {voxel.x - first_range,voxel.y - first_range,voxel.z - first_range };
   range = 0.1f;
-  glm::vec3 mouseMax = {mouse.x + range,mouse.y + range,mouse.z + range};
-  glm::vec3 mouseMin = {mouse.x - range,mouse.y - range,mouse.z - range};
+  glm::vec3 mouseMax = {mouse.x + second_range,mouse.y + second_range,mouse.z + second_range };
+  glm::vec3 mouseMin = {mouse.x - second_range,mouse.y - second_range,mouse.z - second_range };
   // Exit with no intersection if separated along an axis
   if ( voxelMax.x < mouseMin.x || voxelMin.x > mouseMax.x ) return false;
   if ( voxelMax.y < mouseMin.y || voxelMin.y > mouseMax.y ) return false;
@@ -824,7 +832,8 @@ bool FEWorld::CheckIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxe
     intersection = IntersectSegmentPlane(ray_start, ray_end, voxel_id, face_id);
     
     if (intersection) {
-      intersection = CollisionCheck(voxel_list_[voxel_id].transform_.getPosition(), point_to_check);
+      intersection = CollisionCheck(voxel_list_[voxel_id].transform_.getPosition(), point_to_check,
+                                    0.5f,0.1f);
       if (intersection) return true;
     }
   }
