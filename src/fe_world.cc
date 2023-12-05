@@ -25,6 +25,7 @@ FEWorld::FEWorld() {
   culling_ = true;
   greedy_meshing_ = false;
   collision_detection_ = true;
+  octrees_ = true;
 }
 
 FEWorld::~FEWorld() {
@@ -324,7 +325,6 @@ void FEWorld::CheckFaces(int voxel_to_check) {
 
 }
 
-
 void FEWorld::ColourPicking( int colour_id,bool destroy) {
   
   if (colour_id != -1) {
@@ -351,7 +351,17 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
 }
 
 void FEWorld::CollisionDetection( FERender& render, bool destroy ) {
-  if( voxel_in_total_ > 0 ) {
+  if (octrees_) {
+    CollisionDetectionWithOctrees(render, destroy);
+  }
+  else {
+    CollisionDetectionWithoutOctrees(render, destroy);
+  }
+  
+}
+
+void FEWorld::CollisionDetectionWithoutOctrees(FERender& render, bool destroy) {
+  if (voxel_in_total_ > 0) {
     //Get the forward of the camera
     glm::mat4 cT = render.camera_transform_.getTransform();
     glm::vec3 forward{ cT[2].x, cT[2].y, cT[2].z };
@@ -360,23 +370,65 @@ void FEWorld::CollisionDetection( FERender& render, bool destroy ) {
 
     //Get the start and end position of the line
     glm::vec3 start{ render.camera_transform_.getPosition() };
-    glm::vec3 end = start + forward + glm::vec3{1.0f,1.0f,1.0f};
+    glm::vec3 end = start + forward + glm::vec3{ 1.0f,1.0f,1.0f };
 
     for (int i = 0; i < voxel_in_total_; i++) {
       for (int x = 0; x < FACES; x++) {
-        if (CheckIntersection(start, end, i,x) && voxel_list_[i].type_ != VoxelType::air) {
+        if (CheckVoxelIntersection(start, end, i, x) && voxel_list_[i].type_ != VoxelType::air) {
           if (destroy) {
             DestroyVoxel(i);
             if (culling_) UpdateAdjacentFacesWhenDestroy(i);
             return;
-          } else {
+          }
+          else {
             PlaceVoxel(i, x);
             return;
           }
-          
+
         }
       }
-      
+
+    }
+  }
+}
+
+void FEWorld::CollisionDetectionWithOctrees(FERender& render, bool destroy) {
+  if (voxel_in_total_ > 0) {
+    //Get the forward of the camera
+    glm::mat4 cT = render.camera_transform_.getTransform();
+    glm::vec3 forward{ cT[2].x, cT[2].y, cT[2].z };
+    forward = glm::normalize(forward);
+    forward *= -100.0f;
+
+    //Get the start and end position of the line
+    glm::vec3 start{ render.camera_transform_.getPosition() };
+    glm::vec3 end = start + forward + glm::vec3{ 1.0f,1.0f,1.0f };
+
+    for (int node = 0; node < NODES; node++) {
+      for (int node_face = 0; node_face < FACES; node_face++) {
+        if (CheckNodeIntersection(start, end, node, node_face)) {
+          for (int voxel = 0; voxel < nodes_[node].voxels_.size(); voxel++) {
+            for (int voxel_face = 0; voxel_face < FACES; voxel_face++) {
+              if (CheckVoxelIntersection(start, end, nodes_[node].voxels_[voxel], voxel_face) 
+                && voxel_list_[nodes_[node].voxels_[voxel]].type_ != VoxelType::air) {
+                if (destroy) {
+                  DestroyVoxel(nodes_[node].voxels_[voxel]);
+                  if (culling_) UpdateAdjacentFacesWhenDestroy(nodes_[node].voxels_[voxel]);
+                  return;
+                }
+                else {
+                  PlaceVoxel(nodes_[node].voxels_[voxel], voxel_face);
+                  return;
+                }
+
+              }
+            }
+          }
+          
+
+        }
+      }
+
     }
   }
 }
@@ -826,10 +878,10 @@ std::vector<FEMaterialComponent::Vertex> FEWorld::initBottomFace() {
   return vertices;
 }
 
-bool FEWorld::CheckIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id) {
+bool FEWorld::CheckVoxelIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id) {
   bool intersection;
   if (voxel_list_[voxel_id].faces_[face_id].active_) {
-    intersection = IntersectSegmentPlane(ray_start, ray_end, voxel_id, face_id);
+    intersection = IntersectSegmentVoxelPlane(ray_start, ray_end, voxel_id, face_id);
     
     if (intersection) {
       intersection = CollisionCheck(voxel_list_[voxel_id].transform_.getPosition(), point_to_check,
@@ -840,7 +892,7 @@ bool FEWorld::CheckIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxe
   return false;
 }
 
-bool FEWorld::IntersectSegmentPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type) {
+bool FEWorld::IntersectSegmentVoxelPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type) {
   glm::vec3 a, b, c;
   switch (face_type) {
   case FRONTFACE :
@@ -878,6 +930,76 @@ bool FEWorld::IntersectSegmentPlane(glm::vec3 ray_start, glm::vec3 ray_end, int 
   a += voxel_list_[voxel_id].transform_.getPosition();
   b += voxel_list_[voxel_id].transform_.getPosition();
   c += voxel_list_[voxel_id].transform_.getPosition();
+
+  //Get the normal of the Face
+  glm::vec3 normal = glm::normalize(glm::cross(b - a, c - a));
+
+  //Get the dot of the normal and a point in the plane
+  float dotOfPlane = glm::dot(normal, a);
+
+  glm::vec3 ray = ray_end - ray_start;
+
+  float t = (dotOfPlane - glm::dot(normal, ray_start)) / glm::dot(normal, ray);
+  if (t >= 0.0f && t <= 1.0f) {
+    point_to_check = ray_start + t * ray;
+    return true;
+  }
+
+  return false;
+}
+
+bool FEWorld::CheckNodeIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int node_id, int face_id) {
+  bool intersection;
+    intersection = IntersectSegmentNodePlane(ray_start, ray_end, node_id, face_id);
+
+    if (intersection) {
+      intersection = CollisionCheck(nodes_[node_id].center_, point_to_check,
+        nodes_size_, 0.1f);
+      if (intersection) return true;
+    }
+  
+
+  return false;
+}
+
+bool FEWorld::IntersectSegmentNodePlane(glm::vec3 ray_start, glm::vec3 ray_end, int node_id, int face_type) {
+  glm::vec3 a, b, c;
+  switch (face_type) {
+  case FRONTFACE:
+    a = { -nodes_size_,-nodes_size_,nodes_size_ };
+    b = { nodes_size_,-nodes_size_,nodes_size_ };
+    c = { -nodes_size_,nodes_size_,nodes_size_ };
+    break;
+  case LEFTFACES:
+    a = { -nodes_size_,-nodes_size_,-nodes_size_ };
+    b = { -nodes_size_,-nodes_size_,nodes_size_ };
+    c = { -nodes_size_,nodes_size_,-nodes_size_ };
+    break;
+  case BACKFACES:
+    a = { nodes_size_,-nodes_size_,-nodes_size_ };
+    b = { -nodes_size_,-nodes_size_,-nodes_size_ };
+    c = { nodes_size_,nodes_size_,-nodes_size_ };
+    break;
+  case RIGHTFACES:
+    a = { nodes_size_,-nodes_size_,nodes_size_ };
+    b = { nodes_size_,-nodes_size_,-nodes_size_ };
+    c = { nodes_size_,nodes_size_,nodes_size_ };
+    break;
+  case TOPFACES:
+    a = { -nodes_size_,nodes_size_,nodes_size_ };
+    b = { nodes_size_,nodes_size_,nodes_size_ };
+    c = { -nodes_size_,nodes_size_,-nodes_size_ };
+    break;
+  case BOTTOMFACES:
+    a = { nodes_size_,-nodes_size_,nodes_size_ };
+    b = { -nodes_size_,-nodes_size_,nodes_size_ };
+    c = { nodes_size_,-nodes_size_,-nodes_size_ };
+    break;
+  }
+
+  a += nodes_[node_id].center_;
+  b += nodes_[node_id].center_;
+  c += nodes_[node_id].center_;
 
   //Get the normal of the Face
   glm::vec3 normal = glm::normalize(glm::cross(b - a, c - a));

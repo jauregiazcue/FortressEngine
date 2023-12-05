@@ -42,6 +42,9 @@ public:
 
 	void ColourPicking(int colour_id, bool destroy);
 	void CollisionDetection( FERender& render, bool destroy );
+
+	void CollisionDetectionWithoutOctrees(FERender& render, bool destroy);
+	void CollisionDetectionWithOctrees(FERender& render, bool destroy);
 	bool CollisionCheck( glm::vec3 voxel, glm::vec3 mouse, float first_range,float second_range );
 
 	glm::vec3 Raycast( FEWindow& window, FERender& render,float distance_helper );
@@ -61,8 +64,11 @@ public:
 	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
 
-	bool CheckIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id);
-	bool IntersectSegmentPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type);
+	bool CheckVoxelIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id);
+	bool IntersectSegmentVoxelPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type);
+
+	bool CheckNodeIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int node_id, int face_id);
+	bool IntersectSegmentNodePlane(glm::vec3 ray_start, glm::vec3 ray_end, int node_id, int face_type);
 
 	FEMaterialComponent* material_list_;
 
@@ -96,7 +102,6 @@ public:
 		glm::vec3 center_;
 	};
 
-
 	CollisionNodes nodes_[NODES];
 	float nodes_size_;
 	
@@ -121,6 +126,7 @@ public:
 	bool culling_;
 	bool greedy_meshing_;
 	bool collision_detection_;
+	bool octrees_;
 	glm::vec3 point_to_check;
 };
 
