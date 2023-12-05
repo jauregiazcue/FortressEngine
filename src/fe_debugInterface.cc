@@ -36,20 +36,17 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
-  if (world_made_) {
+  
     
-
-    /*ImGui::SetNextWindowPos(ImVec2(kWindowCenterWidth - 2.0f, kWindowCenterHeight - 2.0f), ImGuiCond_Always);
+  if (world_made_ && world_.collision_detection_) {
+    ImGui::SetNextWindowPos(ImVec2(kWindowCenterWidth - 2.0f, kWindowCenterHeight - 2.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(2.0f, 2.0f), ImGuiCond_Always);
 
     ImGui::Begin("Center", NULL, ImGuiWindowFlags_NoResize);
 
-    ImGui::End();*/
+    ImGui::End();
   }
-  
-
-
-
+    
   ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
   ImGui::SetNextWindowSize(ImVec2(window_size_x, window_size_y), ImGuiCond_Always);
 
@@ -117,6 +114,8 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
       world_.collision_detection_ == true ?
         render.colour_picking_ = false : render.colour_picking_ = true;
     }
+
+    ImGui::Checkbox("Octrees", &world_.octrees_);
     
     if (ImGui::Checkbox("Offset",&offset_)) {
       offset_ == true ? world_.offset_ = 1.5f : world_.offset_ = 1.0f;

@@ -104,6 +104,7 @@ public:
 
 	CollisionNodes nodes_[NODES];
 	float nodes_size_;
+	float nodes_fake_size_;
 	
 	struct Voxel {
 		int voxel_id_;

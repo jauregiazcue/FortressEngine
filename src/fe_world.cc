@@ -61,8 +61,12 @@ void FEWorld::init(int voxelPerRow) {
   if( greedy_meshing_ ) {
     GreedyMeshing();
   }
+  if (voxel_per_row_ < 4) octrees_ = false;
   
-  GenerateOctreeNodes();
+  if (octrees_) {
+    GenerateOctreeNodes();
+  }
+  
 }
 
 void FEWorld::createChunks() {
@@ -245,11 +249,12 @@ void FEWorld::SetNodesCenter() {
 }
 
 void FEWorld::SetNodesVoxels() {
-  nodes_size_ = ((float)voxel_per_row_ * 0.25f) - 0.5f;
+  nodes_size_ = ((float)voxel_per_row_ * 0.25f);
+  nodes_fake_size_ = nodes_size_ - 0.5f;
   for (int node = 0; node < NODES; node++) {
     for (int voxel = 0; voxel < voxel_in_total_; voxel++) {
       if (CollisionCheck(nodes_[node].center_, voxel_list_[voxel].transform_.getPosition(),
-        nodes_size_, 0.5f)) {
+        nodes_fake_size_, 0.5f)) {
         nodes_[node].voxels_.push_back(voxel);
       }
     }
