@@ -79,6 +79,10 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
     ImGui::Text("Active Faces : %d", world_.active_faces_ );
     ImGui::Text("World Generation : %d ms",
       world_.ms_for_chunk_creation_);
+    ImGui::Text("Voxel Update : %d mc",
+      world_.mc_for_voxel_updating_);
+    ImGui::Text("Colour Pick : %d mc",
+      render.mc_for_voxel_updating_colour_id_);
 
     if (ImGui::Button("Wireframe")) {
       if (wireframe_) {
@@ -100,6 +104,7 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
       world_.voxel_in_total_ = 0;
       world_.active_faces_ = 0;
       world_made_ = false;
+      world_.mc_for_voxel_updating_ = 0.0f;
     }
   }
   else {
@@ -175,6 +180,7 @@ void FEScene::CSVMaker(FERender& render) {
     << "FPS,"
     << "Time Per Frame,"
     << "Time Taken for World Generation,"
+    << "Time Taken for Voxel Update,"
     << "\n";
 
   //Culling
@@ -196,8 +202,7 @@ void FEScene::CSVMaker(FERender& render) {
   //Times Per Frame
   myfile << (1.0f / fps_) * 1000.0f << ",";
   //Time Taken For World Generation
-  myfile << world_.ms_for_chunk_creation_ << "\n";
-
+  myfile << world_.ms_for_chunk_creation_ << ",";
 
   myfile.close();
 
@@ -228,7 +233,6 @@ void FEScene::CSVUpdate(FERender& render) {
   myfile << (1.0f / fps_) * 1000.0f << ",";
   //Time Taken For World Generation
   myfile << world_.ms_for_chunk_creation_ << "\n";
-
 
   myfile.close();
 }

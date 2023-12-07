@@ -154,6 +154,8 @@ void FERender::DebugCameraMovement() {
 }
 
 void FERender::ColourPicking(FEWindow& window) {
+	std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+
 	//Needed, but very slow
 	glFlush();
 	glFinish();
@@ -181,4 +183,10 @@ void FERender::ColourPicking(FEWindow& window) {
 		data[0] +
 		data[1] * 256 +
 		data[2] * 256 * 256;
+
+	
+	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+
+	mc_for_voxel_updating_colour_id_ =
+		std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
 }

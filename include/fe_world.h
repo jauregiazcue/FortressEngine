@@ -122,6 +122,7 @@ public:
 	int checking = 1;
 	int active_faces_;
 	long long ms_for_chunk_creation_;
+	long long mc_for_voxel_updating_;
 
 	float offset_;
 	bool culling_;

@@ -28,6 +28,7 @@ public:
 	int colour_id_;
 	bool destroy_;
 	bool colour_picking_;
+	long long mc_for_voxel_updating_colour_id_;
 	private :
 
 		void MoveCamera(glm::vec2 directions, glm::vec2 speed);

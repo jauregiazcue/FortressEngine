@@ -19,6 +19,7 @@ FEWorld::FEWorld() {
 
   active_faces_ = 0;
   ms_for_chunk_creation_ = 0.0f;
+  mc_for_voxel_updating_ = 0.0f;
   voxel_per_row_ = 0;
   offset_ = 1.0f;
 
@@ -45,14 +46,15 @@ void FEWorld::init(int voxelPerRow) {
   voxel_in_total_ = voxel_per_row_ * voxel_per_row_ * voxel_per_row_;
   voxel_list_ = new Voxel[voxel_in_total_];
 
-  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+  std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 
   createChunks();
 
-  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 
   ms_for_chunk_creation_ =
     std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+
 
   if (culling_) {
     Culling();
@@ -260,13 +262,6 @@ void FEWorld::SetNodesVoxels() {
     }
   }
 
-  /*for (int node = 0; node < NODES; node++) {
-    printf("\nNode %d : \n", node);
-    for (int voxel = 0; voxel < nodes_[node].voxels_.size(); voxel++) {
-      printf("%d, ",nodes_[node].voxels_[voxel]);
-    }
-  }*/
-
 }
 
 void FEWorld::SetNodeCenter(int node_to_set, int corner_voxel, glm::vec3 second_point) {
@@ -331,7 +326,8 @@ void FEWorld::CheckFaces(int voxel_to_check) {
 }
 
 void FEWorld::ColourPicking( int colour_id,bool destroy) {
-  
+  std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+
   if (colour_id != -1) {
     //If the id is found, the voxel will be destroy or place
     for (int i = 0; i < voxel_in_total_; i++) {
@@ -341,10 +337,19 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
             if (destroy) {
               DestroyVoxel(i);
               if (culling_) UpdateAdjacentFacesWhenDestroy(i);
+              std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+
+              mc_for_voxel_updating_ =
+                std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
               return;
+
             }
             else {
               PlaceVoxel(i,x);
+              std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+
+              mc_for_voxel_updating_ =
+                std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
               return;
             }
           }
@@ -352,17 +357,25 @@ void FEWorld::ColourPicking( int colour_id,bool destroy) {
       }
     }
   }
-  
+
 }
 
 void FEWorld::CollisionDetection( FERender& render, bool destroy ) {
+  std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+
   if (octrees_) {
     CollisionDetectionWithOctrees(render, destroy);
   }
   else {
     CollisionDetectionWithoutOctrees(render, destroy);
   }
+
+  std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+
+  mc_for_voxel_updating_ =
+    std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
   
+
 }
 
 void FEWorld::CollisionDetectionWithoutOctrees(FERender& render, bool destroy) {
