@@ -24,6 +24,7 @@ FERender::FERender() {
 	colour_id_ = -1;
 	destroy_ = false;
 	colour_picking_ = false;
+	mc_for_voxel_updating_colour_id_ = 0;
 }
 
 void FERender::Render(FEWorld& world, FEWindow& window) {

@@ -2,6 +2,7 @@
 #include "fe_constants.h"
 #include "fe_render.h"
 #include <GLFW/glfw3.h>
+#include <algorithm>
 
 
 FEWorld::FEWorld() {
@@ -421,21 +422,22 @@ void FEWorld::CollisionDetectionWithOctrees(FERender& render, bool destroy) {
     //Get the start and end position of the line
     glm::vec3 start{ render.camera_transform_.getPosition() };
     glm::vec3 end = start + forward + glm::vec3{ 1.0f,1.0f,1.0f };
+    std::vector<int> nodesInOrder{ getOctreesInOrder(start) };
 
     for (int node = 0; node < NODES; node++) {
       for (int node_face = 0; node_face < FACES; node_face++) {
-        if (CheckNodeIntersection(start, end, node, node_face)) {
-          for (int voxel = 0; voxel < nodes_[node].voxels_.size(); voxel++) {
+        if (CheckNodeIntersection(start, end, nodesInOrder[node], node_face)) {
+          for (int voxel = 0; voxel < nodes_[nodesInOrder[node]].voxels_.size(); voxel++) {
             for (int voxel_face = 0; voxel_face < FACES; voxel_face++) {
-              if (CheckVoxelIntersection(start, end, nodes_[node].voxels_[voxel], voxel_face) 
-                && voxel_list_[nodes_[node].voxels_[voxel]].type_ != VoxelType::air) {
+              if (CheckVoxelIntersection(start, end, nodes_[nodesInOrder[node]].voxels_[voxel], voxel_face)
+                && voxel_list_[nodes_[nodesInOrder[node]].voxels_[voxel]].type_ != VoxelType::air) {
                 if (destroy) {
-                  DestroyVoxel(nodes_[node].voxels_[voxel]);
-                  if (culling_) UpdateAdjacentFacesWhenDestroy(nodes_[node].voxels_[voxel]);
+                  DestroyVoxel(nodes_[nodesInOrder[node]].voxels_[voxel]);
+                  if (culling_) UpdateAdjacentFacesWhenDestroy(nodes_[nodesInOrder[node]].voxels_[voxel]);
                   return;
                 }
                 else {
-                  PlaceVoxel(nodes_[node].voxels_[voxel], voxel_face);
+                  PlaceVoxel(nodes_[nodesInOrder[node]].voxels_[voxel], voxel_face);
                   return;
                 }
 
@@ -894,6 +896,27 @@ std::vector<FEMaterialComponent::Vertex> FEWorld::initBottomFace() {
                        {1.0f,1.0f} }); // top right
 
   return vertices;
+}
+
+std::vector<int> FEWorld::getOctreesInOrder(glm::vec3 camera_pos) {
+  std::vector<OctreeNodeSorter> onSorter;
+  for (int i = 0; i < NODES; i++) {
+    long double myDistance = sqrt(
+      pow(camera_pos.x - nodes_[i].center_.x, 2.0)
+      + pow(camera_pos.y - nodes_[i].center_.y, 2.0)
+      + pow(camera_pos.z - nodes_[i].center_.z, 2.0));
+    onSorter.push_back({ i,myDistance });
+  }
+  std::sort(onSorter.begin(), onSorter.end());
+  std::vector<int> order;
+  for (int i = 0; i < NODES; i++) {
+    order.push_back(onSorter[i].order_);
+  }
+  return order;
+}
+
+bool FEWorld::sortByDistance(OctreeNodeSorter distance1, OctreeNodeSorter distance2) {
+  return (distance1.distance_ < distance2.distance_);
 }
 
 bool FEWorld::CheckVoxelIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id) {

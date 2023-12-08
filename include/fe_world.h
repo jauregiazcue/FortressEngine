@@ -63,6 +63,17 @@ public:
 	std::vector<FEMaterialComponent::Vertex> initTopFace();
 	std::vector<FEMaterialComponent::Vertex> initBottomFace();
 
+	struct OctreeNodeSorter {
+		int order_;
+		long double distance_;
+		bool operator < (const OctreeNodeSorter& str) const
+		{
+			return (distance_ < str.distance_);
+		}
+	};
+
+	std::vector<int> getOctreesInOrder(glm::vec3 camera_pos);
+	bool sortByDistance(OctreeNodeSorter distance1, OctreeNodeSorter distance2);
 
 	bool CheckVoxelIntersection(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id,int face_id);
 	bool IntersectSegmentVoxelPlane(glm::vec3 ray_start, glm::vec3 ray_end, int voxel_id, int face_type);
@@ -87,6 +98,8 @@ public:
 		air = 1,
 		innactive = 2
 	};
+
+	
 
 	#define FRONTFACE 0
 	#define LEFTFACES 1
