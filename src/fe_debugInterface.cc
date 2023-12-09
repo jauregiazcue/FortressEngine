@@ -7,8 +7,8 @@
 #include <fstream>
 #include <fe_input.h>
 #include "fe_constants.h"
-
-
+#include <thread>
+#include <functional>
 FEScene::FEScene() {
   active_voxel_ = 0;
   active_face_ = 0;
@@ -53,11 +53,13 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
   ImGui::Begin("Voxel Debug", NULL, ImGuiWindowFlags_NoResize);
   if (world_.collision_detection_) {
     if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_LEFT)) {
-      world_.CollisionDetection(render, true);
+      std::thread x = std::thread(&FEWorld::CollisionDetection, &world_, render, true);
+      x.join();
     }
 
     if (FEInput::mouseKeyPress(Mouse::KEY_MOUSE_RIGHT)) {
-      world_.CollisionDetection(render, false);
+      std::thread x = std::thread(&FEWorld::CollisionDetection, &world_, render, false);
+      x.join();
     }
   }
   
@@ -171,7 +173,6 @@ void FEScene::CSVMaker(FERender& render) {
   myfile.open(csv_file_name_);
 
   myfile << "Culling,"
-    << "Greedy Meshing,"
     << "Colour Picking,"
     << "Voxel In Scene,"
     << "Active Voxels,"
@@ -185,8 +186,6 @@ void FEScene::CSVMaker(FERender& render) {
 
   //Culling
   world_.culling_ == true ? myfile << "True," : myfile << "False,";
-  //Greedy Meshing
-  world_.greedy_meshing_ == true ? myfile << "True," : myfile << "False,";
   //Colour Picking
   render.colour_picking_ == true ? myfile << "True," : myfile << "False,";
   //Voxels in Scene
@@ -215,8 +214,6 @@ void FEScene::CSVUpdate(FERender& render) {
 
   //Culling
   world_.culling_ == true ? myfile << "True," : myfile << "False,";
-  //Greedy Meshing
-  world_.greedy_meshing_ == true ? myfile << "True," : myfile << "False,";
   //Colour Picking
   render.colour_picking_ == true ? myfile << "True," : myfile << "False,";
   //Voxels in Scene

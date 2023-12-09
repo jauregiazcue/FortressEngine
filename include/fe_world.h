@@ -31,7 +31,6 @@ public:
 		int voxel_id, int face_id, glm::mat4 projection, glm::mat4 view, int program_id);
 
 	void Culling();
-	void GreedyMeshing();
 	void GenerateOctreeNodes();
 	void SetNodesCenter();
 	void SetNodesVoxels();
@@ -139,7 +138,6 @@ public:
 
 	float offset_;
 	bool culling_;
-	bool greedy_meshing_;
 	bool collision_detection_;
 	bool octrees_;
 	glm::vec3 point_to_check;

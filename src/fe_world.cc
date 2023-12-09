@@ -25,7 +25,6 @@ FEWorld::FEWorld() {
   offset_ = 1.0f;
 
   culling_ = true;
-  greedy_meshing_ = false;
   collision_detection_ = true;
   octrees_ = true;
 }
@@ -61,10 +60,8 @@ void FEWorld::init(int voxelPerRow) {
     Culling();
   }
 
-  if( greedy_meshing_ ) {
-    GreedyMeshing();
-  }
   if (voxel_per_row_ < 4) octrees_ = false;
+  if (!collision_detection_) octrees_ = false;
   
   if (octrees_) {
     GenerateOctreeNodes();
@@ -198,26 +195,7 @@ void FEWorld::Culling() {
   }
 }
 
-void FEWorld::GreedyMeshing() {
-  /*if (voxel_in_total_ > 1) {
-    glm::vec3 last_position_;
-    glm::vec3 first_position_ = transform_list_[voxel_list_[0].voxel_id_].getPosition();
-    for (int i = 1; i < voxel_per_row_and_colum_; i++) {
-      voxel_list_[i].faces_[LEFTFACES].active_ = false;
-      last_position_ = transform_list_[voxel_list_[i].voxel_id_].getPosition();
-    }
-    glm::vec3 center_of_face{
-      (first_position_.x + last_position_.x) / 2,
-      (first_position_.y + last_position_.y) / 2,
-      (first_position_.z + last_position_.z) / 2, };
 
-    voxel_list_[0].faces_[LEFTFACES].transform_.setPosition(center_of_face);
-    float new_scale = (float)voxel_per_row_;
-    voxel_list_[0].faces_[LEFTFACES].transform_.setScale({ 1.0f,new_scale,new_scale });
-
-  }*/
-  
-}
 
 void FEWorld::GenerateOctreeNodes() {
   SetNodesCenter();
