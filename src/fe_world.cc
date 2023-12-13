@@ -353,7 +353,6 @@ void FEWorld::CollisionDetection( FERender& render, bool destroy ) {
 
   mc_for_voxel_updating_ =
     std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-  
 
 }
 

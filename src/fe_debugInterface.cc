@@ -156,10 +156,10 @@ void FEScene::Interface(GLfloat deltaTime, FERender& render, FEWindow& window) {
 
   ImGui::Begin("CSV File Maker", NULL, ImGuiWindowFlags_NoResize);
   ImGui::InputText("CSV", csv_file_name_, csv_file_name_size_);
-  if (ImGui::Button("Make CSV File")) {
+  if (ImGui::Button("Make CSV File") || FEInput::keyPress(Key::KEY_1)) {
     CSVMaker(render);
   }
-  if (ImGui::Button("Update CSV File")) {
+  if (ImGui::Button("Update CSV File") || FEInput::keyPress(Key::KEY_2)) {
     CSVUpdate(render);
   }
 
