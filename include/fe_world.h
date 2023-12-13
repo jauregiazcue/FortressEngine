@@ -128,6 +128,7 @@ public:
 
 
 	int voxel_per_row_;
+	int voxel_per_colum_;
 	int voxel_per_row_and_colum_;
 	int voxel_in_total_;
 

@@ -42,23 +42,15 @@ FEWorld::~FEWorld() {
 
 void FEWorld::init(int voxelPerRow) {
   voxel_per_row_ = voxelPerRow;
-  voxel_per_row_and_colum_ = voxel_per_row_ * voxel_per_row_;
-  voxel_in_total_ = voxel_per_row_ * voxel_per_row_ * voxel_per_row_;
+  voxel_per_colum_ = 3;
+  voxel_per_row_and_colum_ = voxel_per_colum_ * voxel_per_row_;
+  voxel_in_total_ = voxel_per_row_and_colum_ * voxel_per_row_;
   voxel_list_ = new Voxel[voxel_in_total_];
-
-  std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 
   createChunks();
 
-  std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-
-  ms_for_chunk_creation_ =
-    std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-
-
-  if (culling_) {
-    Culling();
-  }
+   Culling();
+  
 
   if (voxel_per_row_ < 4) octrees_ = false;
   if (!collision_detection_) octrees_ = false;
@@ -93,7 +85,7 @@ void FEWorld::createChunks() {
       y += 1.0f;
     }
 
-    if (y == (float)voxel_per_row_) {
+    if (y == (float)voxel_per_colum_) {
       y = 0.0f;
       x += 1.0f;
     }
@@ -194,8 +186,6 @@ void FEWorld::Culling() {
     CheckFaces(i);
   }
 }
-
-
 
 void FEWorld::GenerateOctreeNodes() {
   SetNodesCenter();
