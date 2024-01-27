@@ -123,6 +123,7 @@ public:
 		VoxelType type_;
 		Faces faces_[FACES];
 		FETransformComponent transform_;
+		glm::vec3 colour_;
 	};
 	Voxel* voxel_list_;
 

@@ -69,12 +69,39 @@ void FEWorld::createChunks() {
   for (int voxel_id = 0; voxel_id < voxel_in_total_; voxel_id++) {
     glm::vec3 position{ x * offset_,-y * offset_,-z * offset_ };
     Faces* faces = GetFaces(voxel_id, position);
+    glm::vec3 color;
+    if ((int)z % 2 == 0) {
+      if (y == 0.0f) {
+        color = { 0.2f,0.6f,0.2f };
+      }
+      else if (y == 1.0f) {
+        color = { 0.9f,0.8f,0.4f };
+      }
+      else {
+        color = { 0.4f,0.1f,0.0f };
+      }
+    }
+    else {
+      if (y == 0.0f) {
+        color = { 0.2f,0.8f,0.3f };
+      }
+      else if (y == 1.0f) {
+        color = { 0.9f,0.7f,0.3f };
+      }
+      else {
+        color = { 0.5f,0.2f,0.0f };
+      }
+    }
+    
+
     Voxel test({ voxel_id,FEWorld::VoxelType::block,
           {faces[FRONTFACE],faces[LEFTFACES],faces[BACKFACES],
            faces[RIGHTFACES],faces[TOPFACES],faces[BOTTOMFACES]}, 
           FETransformComponent{position,
                                { 0.0f,0.0f,0.0f },
-                               { 1.0f,1.0f,1.0f } } });
+                               { 1.0f,1.0f,1.0f } },
+      color });
+    
     voxel_list_[voxel_id] = test;
 
     active_faces_ += FACES;
@@ -137,8 +164,8 @@ void FEWorld::DrawFace(int voxel_id,int face_id, glm::mat4 projection, glm::mat4
 
     material.enable();
 
-    material.setUpReferenceUniform("PickingColour",
-      drawing_face.color_id_);
+    material.setUpReferenceUniform("Colour",
+      voxel_list_[voxel_id].colour_);
 
     material.setUpModel( voxel_list_[voxel_id].transform_.getTransform());
 
